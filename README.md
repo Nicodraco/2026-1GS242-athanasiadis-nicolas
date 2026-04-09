@@ -7,7 +7,7 @@
  1GS242 - Desarrollo de Software IX
  
  ## Foto
- ![Foto de Nicolas Athanasiadis](file:///C:/Users/Usuario/Desktop/Desarrollo%20IX/2026-1GS242-athanasiadis-nicolas/img/Nico%20foto.jpg)
+ ![file:///C:/Users/Usuario/Desktop/Desarrollo%20IX/2026-1GS242-athanasiadis-nicolas/img/Nico%20foto.jpg]
  
  ## ¿Qué me gusta del desarrollo de software?
  Me gusta que el desarrollo de software permite resolver problemas reales, crear soluciones útiles y mejorar 
