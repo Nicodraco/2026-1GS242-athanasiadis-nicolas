@@ -4,7 +4,7 @@
  Nicolas Athanasiadis
  
  ## Materia
- 1GS242 - Desarrollo de Software
+ 1GS242 - Desarrollo de Software IX
  
  ## Foto
  ![Foto de Nicolas Athanasiadis](file:///C:/Users/Usuario/Desktop/Desarrollo%20IX/2026-1GS242-athanasiadis-nicolas/img/Nico%20foto.jpg)
