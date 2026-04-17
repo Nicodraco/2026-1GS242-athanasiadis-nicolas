@@ -112,6 +112,7 @@ function AuthPage({ onAuth }) {
           <button
             className={`rounded px-3 py-2 text-sm ${mode === "login" ? "bg-slate-900 text-white" : "bg-slate-200"}`}
             onClick={() => setMode("login")}
+            data-testid="auth-mode-login"
             type="button"
           >
             Iniciar sesión
@@ -119,6 +120,7 @@ function AuthPage({ onAuth }) {
           <button
             className={`rounded px-3 py-2 text-sm ${mode === "register" ? "bg-slate-900 text-white" : "bg-slate-200"}`}
             onClick={() => setMode("register")}
+            data-testid="auth-mode-register"
             type="button"
           >
             Registrarme
@@ -130,12 +132,14 @@ function AuthPage({ onAuth }) {
             <>
               <input
                 className="w-full rounded border border-slate-300 p-2"
+                data-testid="auth-name-input"
                 onChange={(event) => setName(event.target.value)}
                 placeholder="Nombre"
                 value={name}
               />
               <select
                 className="w-full rounded border border-slate-300 p-2"
+                data-testid="auth-role-select"
                 onChange={(event) => setRole(event.target.value)}
                 value={role}
               >
@@ -146,6 +150,7 @@ function AuthPage({ onAuth }) {
           ) : null}
           <input
             className="w-full rounded border border-slate-300 p-2"
+            data-testid="auth-email-input"
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Correo"
             type="email"
@@ -153,6 +158,7 @@ function AuthPage({ onAuth }) {
           />
           <input
             className="w-full rounded border border-slate-300 p-2"
+            data-testid="auth-password-input"
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Contraseña"
             type="password"
@@ -160,13 +166,18 @@ function AuthPage({ onAuth }) {
           />
           <button
             className="w-full rounded bg-blue-600 p-2 font-semibold text-white disabled:bg-blue-300"
+            data-testid="auth-submit-button"
             disabled={loading}
             type="submit"
           >
             {loading ? "Procesando..." : mode === "login" ? "Entrar" : "Crear cuenta"}
           </button>
         </form>
-        {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+        {error ? (
+          <p className="mt-2 text-sm text-red-600" data-testid="auth-error">
+            {error}
+          </p>
+        ) : null}
       </div>
     </main>
   );
@@ -235,6 +246,7 @@ function LandingPage({ user, onLogout }) {
             </label>
             <input
               className="mt-2 w-full rounded border border-slate-300 p-2 uppercase"
+              data-testid="landing-code-input"
               maxLength={6}
               onChange={(event) => setCode(event.target.value)}
               placeholder="ABC123"
@@ -242,6 +254,7 @@ function LandingPage({ user, onLogout }) {
             />
             <button
               className="mt-3 w-full rounded bg-slate-900 p-2 font-semibold text-white hover:bg-slate-700"
+              data-testid="landing-join-button"
               type="submit"
             >
               Entrar a encuesta
@@ -380,6 +393,7 @@ function TeacherPage({ user, onLogout }) {
           <form className="mt-4 space-y-3" onSubmit={createPoll}>
             <input
               className="w-full rounded border border-slate-300 p-2"
+              data-testid="teacher-question-input"
               onChange={(event) => setQuestion(event.target.value)}
               placeholder="Pregunta de la encuesta"
               value={question}
@@ -388,6 +402,7 @@ function TeacherPage({ user, onLogout }) {
               <div className="flex gap-2" key={index}>
                 <input
                   className="w-full rounded border border-slate-300 p-2"
+                  data-testid={`teacher-option-input-${index}`}
                   onChange={(event) => {
                     const updated = [...options];
                     updated[index] = event.target.value;
@@ -411,6 +426,7 @@ function TeacherPage({ user, onLogout }) {
             <div className="flex gap-2">
               <button
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
+                data-testid="teacher-add-option-button"
                 disabled={options.length >= 4}
                 onClick={() => setOptions((current) => [...current, ""])}
                 type="button"
@@ -419,6 +435,7 @@ function TeacherPage({ user, onLogout }) {
               </button>
               <button
                 className="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white disabled:bg-blue-300"
+                data-testid="teacher-create-poll-button"
                 disabled={loading || !question.trim() || validOptionsCount < 2}
                 type="submit"
               >
@@ -437,7 +454,7 @@ function TeacherPage({ user, onLogout }) {
               <p className="text-sm text-slate-500">Aún no hay encuestas.</p>
             ) : (
               polls.map((poll) => (
-                <div className="rounded-lg border p-3" key={poll.id}>
+                <div className="rounded-lg border p-3" data-testid={`teacher-poll-card-${poll.code}`} key={poll.id}>
                   <p className="font-semibold text-slate-800">{poll.question}</p>
                   <p className="text-sm text-slate-600">
                     Código: <span className="font-mono font-semibold">{poll.code}</span> · Votos:{" "}
@@ -446,6 +463,7 @@ function TeacherPage({ user, onLogout }) {
                   <div className="mt-2 flex flex-wrap gap-2">
                     <button
                       className="rounded bg-slate-800 px-3 py-1 text-xs font-medium text-white"
+                      data-testid={`teacher-view-results-${poll.code}`}
                       onClick={() => setSelectedCode(poll.code)}
                       type="button"
                     >
@@ -453,6 +471,7 @@ function TeacherPage({ user, onLogout }) {
                     </button>
                     <button
                       className="rounded border px-3 py-1 text-xs"
+                      data-testid={`teacher-close-poll-${poll.code}`}
                       disabled={poll.isClosed}
                       onClick={() => closePoll(poll.code)}
                       type="button"
@@ -461,6 +480,7 @@ function TeacherPage({ user, onLogout }) {
                     </button>
                     <button
                       className="rounded border border-red-600 px-3 py-1 text-xs text-red-700"
+                      data-testid={`teacher-delete-poll-${poll.code}`}
                       onClick={() => deletePoll(poll.code)}
                       type="button"
                     >
@@ -475,12 +495,12 @@ function TeacherPage({ user, onLogout }) {
       </div>
 
       {selectedResults ? (
-        <section className="mt-6 rounded-xl bg-white p-5 shadow">
+        <section className="mt-6 rounded-xl bg-white p-5 shadow" data-testid="teacher-results-section">
           <h3 className="text-lg font-bold text-slate-800">
             Resultados: {selectedResults.question}
           </h3>
           <p className="mb-2 mt-1 text-sm text-slate-600">
-            Código: <span className="font-mono">{selectedResults.code}</span> · Total votos:{" "}
+            Código: <span className="font-mono" data-testid="teacher-results-code">{selectedResults.code}</span> · Total votos:{" "}
             {selectedResults.totalVotes}
           </p>
           <div className="mb-4 text-sm">
@@ -604,6 +624,7 @@ function StudentPage({ user }) {
               <label className="flex items-center gap-2 rounded border p-3" key={option.id}>
                 <input
                   checked={selectedOptionId === option.id}
+                  data-testid={`student-option-${option.id}`}
                   disabled={hasVoted || poll.isClosed}
                   name="option"
                   onChange={() => setSelectedOptionId(option.id)}
@@ -614,6 +635,7 @@ function StudentPage({ user }) {
             ))}
             <button
               className="w-full rounded bg-blue-600 p-2 font-semibold text-white disabled:bg-blue-300"
+              data-testid="student-submit-vote-button"
               disabled={loadingVote || hasVoted || poll.isClosed}
               type="submit"
             >
@@ -622,7 +644,11 @@ function StudentPage({ user }) {
           </form>
         )}
 
-        {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+        {error ? (
+          <p className="mt-2 text-sm text-red-600" data-testid="student-error">
+            {error}
+          </p>
+        ) : null}
       </section>
 
       {results ? (

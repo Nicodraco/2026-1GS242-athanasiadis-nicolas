@@ -132,3 +132,59 @@ El script valida:
 - Registro/login con JWT
 - Creación de encuesta
 - Registro de voto
+
+## 8. Validación E2E con Playwright (base lab 5)
+
+Se agregó una suite inicial E2E con Playwright para validar flujos críticos de punta a punta sobre la aplicación de encuestas.
+
+### 8.1 Instalación
+
+```bash
+cd frontend
+npm install
+npx playwright install chromium
+```
+
+### 8.2 Ejecución
+
+```bash
+cd frontend
+npm run test:e2e
+```
+
+Scripts disponibles:
+- `npm run test:e2e` -> corre toda la suite en headless.
+- `npm run test:e2e:headed` -> corre en modo visible.
+- `npm run test:e2e:ui` -> abre la UI de Playwright.
+
+La configuración (`frontend/playwright.config.js`) levanta automáticamente:
+- Backend Bun en `http://localhost:4000`
+- Frontend Vite preview en `http://localhost:4173`
+
+### 8.3 Flujos críticos automatizados
+
+Archivo: `frontend/e2e/pollclass.e2e.spec.js`
+
+1. **Flujo profesor (E2E):** registro como profesor y creación de encuesta.
+2. **Flujo estudiante (E2E):** entrar por código, votar y validar estado final de “Ya votaste”.
+3. **Caso negativo (E2E):** estudiante intentando acceder a `/teacher` y redirección obligatoria a `/auth`.
+
+### 8.4 Estructura de pruebas y locators estables
+
+- Se usa carpeta dedicada `frontend/e2e/`.
+- Se usan `data-testid` en elementos clave para reducir fragilidad en selectors.
+- Datos de prueba son únicos por ejecución (emails dinámicos), para evitar colisiones.
+
+### 8.5 Qué valida cada assertion
+
+- No solo navegación; también estado real de negocio:
+  - creación de encuesta reflejada en panel de resultados y código válido.
+  - voto de estudiante reflejado en estado “Ya votaste” y conteo de resultados.
+  - control de acceso por rol en ruta protegida.
+
+## 9. Bitácora agéntica (corta)
+
+- **Qué pedí al agente:** integrar Playwright al proyecto y crear pruebas E2E de flujos críticos con un caso negativo.
+- **Qué acepté del agente:** configuración Playwright, scripts npm E2E, tests para profesor/estudiante/acceso prohibido y documentación de ejecución.
+- **Qué corregí yo:** revisión de criterios de la asignación y verificación de que los flujos correspondan al laboratorio.
+- **Cómo validé:** ejecución de comandos de build y de suite E2E, revisando que las assertions representen comportamiento funcional real.
