@@ -1,0 +1,164 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - link [ref=e5] [cursor=pointer]:
+        - /url: /en-US/
+        - application [ref=e7]:
+          - generic [ref=e25]: Recharts
+      - navigation [ref=e26]:
+        - list [ref=e27]:
+          - listitem [ref=e28]:
+            - link "Guide" [ref=e29] [cursor=pointer]:
+              - /url: /en-US/guide/
+          - listitem [ref=e30]:
+            - link "API" [ref=e31] [cursor=pointer]:
+              - /url: /en-US/api/
+          - listitem [ref=e32]:
+            - link "Examples" [ref=e33] [cursor=pointer]:
+              - /url: /en-US/examples/
+          - listitem [ref=e34]:
+            - link "Storybook" [ref=e35] [cursor=pointer]:
+              - /url: /en-US/storybook/
+          - listitem [ref=e36]:
+            - link "Wiki" [ref=e37] [cursor=pointer]:
+              - /url: https://github.com/recharts/recharts/wiki
+              - text: Wiki
+              - img [ref=e38]
+          - listitem [ref=e42]:
+            - link "GitHub" [ref=e43] [cursor=pointer]:
+              - /url: https://github.com/recharts/recharts
+              - text: GitHub
+              - img [ref=e44]
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]: En
+            - generic [ref=e51]:
+              - text: "|"
+              - link "中文" [ref=e52] [cursor=pointer]:
+                - /url: /zh-CN/
+          - button "system" [ref=e53] [cursor=pointer]:
+            - img [ref=e54]
+    - main [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - heading "Recharts" [level=1] [ref=e59]
+          - paragraph [ref=e60]: A composable charting library built on React components
+          - link "Install v3.8.1" [ref=e61] [cursor=pointer]:
+            - /url: /en-US/guide/installation/
+            - img [ref=e62]
+            - text: Install v3.8.1
+          - generic:
+            - generic:
+              - link "Star recharts/recharts on GitHub":
+                - /url: https://github.com/recharts/recharts
+        - generic [ref=e64]:
+          - application [ref=e66]:
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e103]: A
+                - generic [ref=e105]: B
+                - generic [ref=e107]: C
+                - generic [ref=e109]: D
+                - generic [ref=e111]: E
+                - generic [ref=e113]: F
+              - generic [ref=e114]:
+                - generic [ref=e116]: "0"
+                - generic [ref=e118]: "250"
+                - generic [ref=e120]: "500"
+                - generic [ref=e122]: "750"
+                - generic [ref=e124]: "1000"
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - combobox [ref=e128] [cursor=pointer]:
+                - option "Source code" [selected]
+                - option "Hook inspector"
+                - option "Annotations"
+              - button "Copy to clipboard" [ref=e129] [cursor=pointer]:
+                - img [ref=e130]
+                - text: Copy to clipboard
+              - button "Edit" [ref=e133] [cursor=pointer]:
+                - img [ref=e134]
+                - generic [ref=e137]: Edit
+              - button "Open in StackBlitz" [ref=e138] [cursor=pointer]:
+                - img [ref=e139]
+                - generic [ref=e145]: Open in StackBlitz
+            - generic [ref=e149]:
+              - generic [ref=e152]: ›
+              - textbox [ref=e153]:
+                - generic [ref=e154]: "import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';"
+                - generic [ref=e155]: "import { RechartsDevtools } from '@recharts/devtools';"
+                - generic [ref=e157]: "// #region Sample data…// #endregion"
+                - generic [ref=e159]: "export default function IndexLineChart() {"
+        - generic [ref=e161]:
+          - heading "Features" [level=2] [ref=e162]
+          - list [ref=e163]:
+            - listitem [ref=e164]:
+              - img [ref=e165]
+              - strong [ref=e167]: Composable
+              - paragraph [ref=e168]: Quickly build your charts with decoupled, reusable React components.
+            - listitem [ref=e169]:
+              - img [ref=e170]
+              - strong [ref=e174]: Reliable
+              - paragraph [ref=e175]: Built on top of SVG elements with a lightweight dependency on D3 submodules.
+            - listitem [ref=e176]:
+              - img [ref=e177]
+              - strong [ref=e179]: Powerful
+              - paragraph [ref=e180]: Customize your chart by tweaking component props and passing in custom components.
+        - generic [ref=e181]:
+          - heading "Thanks to our sponsors" [level=2] [ref=e182]
+          - paragraph [ref=e183]:
+            - text: Browser testing via
+            - link "TestMu AI" [ref=e184] [cursor=pointer]:
+              - /url: https://www.testmuai.com/?utm_medium=sponsor&utm_source=recharts
+              - img "TestMu AI" [ref=e185]
+        - generic [ref=e186]:
+          - heading "Who's using recharts ?" [level=2] [ref=e187]
+          - list [ref=e188]:
+            - listitem [ref=e189]:
+              - link "shadcn/ui" [ref=e190] [cursor=pointer]:
+                - /url: https://ui.shadcn.com/charts/area
+                - generic [ref=e191]: shadcn/ui
+            - listitem [ref=e192]:
+              - link "EvilCharts" [ref=e193] [cursor=pointer]:
+                - /url: https://evilcharts.com/
+                - generic [ref=e194]: EvilCharts
+            - listitem [ref=e195]:
+              - link "阿里指数" [ref=e196] [cursor=pointer]:
+                - /url: https://alizs.taobao.com
+                - generic [ref=e197]: 阿里指数
+            - listitem [ref=e198]:
+              - link "阿里数据" [ref=e199] [cursor=pointer]:
+                - /url: https://dt.alibaba.com/
+                - generic [ref=e200]: 阿里数据
+            - listitem [ref=e201]:
+              - link "Fyndiq" [ref=e202] [cursor=pointer]:
+                - /url: https://fyndiq.se
+                - generic [ref=e203]: Fyndiq
+            - listitem [ref=e204]:
+              - link "chayns®" [ref=e205] [cursor=pointer]:
+                - /url: https://de.tobit.software/mostwanted
+                - generic [ref=e206]: chayns®
+            - listitem [ref=e207]:
+              - link "Demisto" [ref=e208] [cursor=pointer]:
+                - /url: https://www.demisto.com/
+                - generic [ref=e209]: Demisto
+            - listitem [ref=e210]:
+              - link "Squadlytics" [ref=e211] [cursor=pointer]:
+                - /url: https://squadlytics.com
+                - generic [ref=e212]: Squadlytics
+            - listitem [ref=e213]:
+              - link "ahrefs" [ref=e214] [cursor=pointer]:
+                - /url: https://ahrefs.com/
+                - generic [ref=e215]: ahrefs
+        - generic [ref=e216]:
+          - img [ref=e217]
+          - paragraph [ref=e222]: Recharts makes it easy to integrate charts into your React application
+          - link "Get Started" [ref=e223] [cursor=pointer]:
+            - /url: /en-US/guide/getting-started/
+    - contentinfo [ref=e224]:
+      - paragraph [ref=e225]:
+        - text: Released under the
+        - link "MIT License" [ref=e226] [cursor=pointer]:
+          - /url: https://opensource.org/licenses/MIT
+      - paragraph [ref=e227]: Copyright (c) 2016-2026 Recharts Group
+  - generic [ref=e228]: "0"

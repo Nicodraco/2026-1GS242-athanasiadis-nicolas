@@ -1,13 +1,12 @@
 # Portada
 
-**Materia:** ____________________________________________  
+**Materia:** Desarrollo de Software XI  
 **Tema:** Interfaz web con IA: uso de CopilotKit para construir experiencias conversacionales, representar charts e inyectar componentes en frontend moderno  
 **Integrantes del grupo:**  
-1. ____________________________________________  
-2. ____________________________________________  
-3. ____________________________________________  
-4. ____________________________________________  
-**Fecha:** ____ / ____ / ______
+1. Nicolas Athanasiadis  
+2. Jack Garcia  
+3. Angel del Biondo    
+**Fecha:** 04 / 17 / 2026
 
 ---
 
@@ -336,7 +335,7 @@ Resultado: el usuario logra análisis iterativo sin navegar múltiples pantallas
 
 ![Estructura del proyecto](./capturas/01-estructura-proyecto.png)
 
-### 10.2 Interfaz del copiloto en ejecución
+### 10.2 Interfaz del copilot en ejecución
 
 ![Copilot en ejecución](./capturas/02-copilot-ejecucion.png)
 
@@ -400,47 +399,24 @@ Además, para mantener resultados sostenibles en producción, se recomienda inco
 
 ## Integrante 1
 
-**Nombre:** ____________________________________________  
+**Nombre:** Nicolas Athanasiadis  
 **Conclusión personal:**  
 
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-______________________________________________________________________________
+Esta investigación me permitió entender que una interfaz con IA no se trata solo de agregar un chat, sino de diseñar contratos claros entre conversación, datos y componentes visuales. Considero que CopilotKit aporta valor cuando se usa con acciones validadas, schemas y control de permisos. El mayor aprendizaje fue que la calidad técnica de la arquitectura define si la experiencia asistida realmente ayuda al usuario.
 
 ## Integrante 2
 
-**Nombre:** ____________________________________________  
+**Nombre:** Jack Garcia  
 **Conclusión personal:**  
 
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-______________________________________________________________________________
+Concluyo que integrar IA en frontend exige priorizar experiencia de usuario y claridad en la interacción, especialmente en estados de carga, errores y confirmaciones. La capacidad de renderizar charts y componentes dinámicos mejora mucho la toma de decisiones cuando los datos están bien estructurados. También vi que sin observabilidad y métricas, es difícil sostener una solución de IA en producción.
 
 ## Integrante 3
 
-**Nombre:** ____________________________________________  
+**Nombre:** Angel del Biondo  
 **Conclusión personal:**  
 
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-## Integrante 4
-
-**Nombre:** ____________________________________________  
-**Conclusión personal:**  
-
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-______________________________________________________________________________
+Para mí, el punto más importante fue comprender que la seguridad y la gobernanza son tan relevantes como el modelo de IA. CopilotKit facilita acelerar el desarrollo, pero su uso debe acompañarse de límites técnicos para evitar respuestas inconsistentes o acciones riesgosas. Esta investigación demuestra que una implementación modular y mantenible es clave para escalar asistentes dentro de aplicaciones reales.
 
 ---
 

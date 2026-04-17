@@ -1,0 +1,297 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - paragraph [ref=e12]: Bring MCP Apps interaction to your users with CopilotKit!
+      - link "See What's New" [ref=e13] [cursor=pointer]:
+        - /url: /generative-ui/mcp-apps
+    - button "Close Banner" [ref=e14]:
+      - img [ref=e15]
+  - navigation [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - link "Logo" [ref=e22] [cursor=pointer]:
+            - /url: /
+            - img "Logo" [ref=e23]
+          - list [ref=e24]:
+            - listitem [ref=e25]:
+              - link "Documentation" [ref=e26] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e27]:
+                  - img [ref=e29]
+                  - generic [ref=e31]: Documentation
+            - listitem [ref=e33]:
+              - link "API Reference" [ref=e34] [cursor=pointer]:
+                - /url: /reference
+                - generic [ref=e35]:
+                  - img [ref=e37]
+                  - generic [ref=e39]: API Reference
+            - listitem [ref=e41]:
+              - link "Learn" [ref=e42] [cursor=pointer]:
+                - /url: /learn
+                - generic [ref=e43]:
+                  - img [ref=e45]
+                  - generic [ref=e47]: Learn
+            - listitem [ref=e49]:
+              - link "Copilot Cloud" [ref=e50] [cursor=pointer]:
+                - /url: https://cloud.copilotkit.ai
+                - generic [ref=e51]:
+                  - img [ref=e53]
+                  - generic [ref=e56]: Copilot Cloud
+                  - img [ref=e57]
+        - img "Slanted end border" [ref=e60]
+      - generic [ref=e61]:
+        - img "Slanted start border" [ref=e62]
+        - generic [ref=e63]:
+          - link [ref=e64] [cursor=pointer]:
+            - /url: https://github.com/copilotkit/copilotkit
+            - img [ref=e66]
+          - link [ref=e68] [cursor=pointer]:
+            - /url: https://discord.gg/6dffbvGU3D
+            - img [ref=e70]
+          - button "Theme icon" [ref=e72] [cursor=pointer]:
+            - img "Theme icon" [ref=e73]
+          - button "Search..." [ref=e74] [cursor=pointer]:
+            - img [ref=e75]
+            - generic [ref=e77]: Search...
+            - img [ref=e78]
+  - main [ref=e81]:
+    - complementary [ref=e82]:
+      - button "Toggle integration selector" [ref=e84] [cursor=pointer]:
+        - generic [ref=e85]:
+          - img [ref=e87]
+          - generic [ref=e89]: Select integration...
+        - img [ref=e91]
+      - list [ref=e93]:
+        - listitem
+        - listitem [ref=e94]:
+          - generic [ref=e95]: Getting Started
+        - listitem [ref=e97]:
+          - link "Overview" [ref=e98] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e99]:
+          - link "Quickstart" [ref=e100] [cursor=pointer]:
+            - /url: /quickstart
+        - listitem [ref=e101]:
+          - link "Coding Agents" [ref=e102] [cursor=pointer]:
+            - /url: /coding-agents
+        - listitem [ref=e103]:
+          - generic [ref=e104]: Basics
+        - listitem [ref=e106]:
+          - link "Prebuilt Components" [ref=e107] [cursor=pointer]:
+            - /url: /prebuilt-components
+        - listitem [ref=e109]:
+          - button "Custom Look and Feel" [ref=e110] [cursor=pointer]:
+            - generic [ref=e111]: Custom Look and Feel
+            - img [ref=e112]
+        - listitem [ref=e114]:
+          - link "Programmatic Control" [ref=e115] [cursor=pointer]:
+            - /url: /programmatic-control
+        - listitem [ref=e116]:
+          - link "Multimodal Attachments" [ref=e117] [cursor=pointer]:
+            - /url: /multimodal-attachments
+        - listitem [ref=e118]:
+          - link "Inspector" [ref=e119] [cursor=pointer]:
+            - /url: /inspector
+        - listitem [ref=e120]:
+          - generic [ref=e121]: Generative UI
+        - listitem [ref=e124]:
+          - button "Your Components" [ref=e125] [cursor=pointer]:
+            - generic [ref=e126]: Your Components
+            - img [ref=e127]
+        - listitem [ref=e129]:
+          - link "Tool Rendering" [ref=e130] [cursor=pointer]:
+            - /url: /generative-ui/tool-rendering
+        - listitem [ref=e131]:
+          - link "State Rendering" [ref=e132] [cursor=pointer]:
+            - /url: /generative-ui/state-rendering
+        - listitem [ref=e133]:
+          - link "MCP Apps" [ref=e134] [cursor=pointer]:
+            - /url: /generative-ui/mcp-apps
+        - listitem [ref=e135]:
+          - link "Open Generative UI" [ref=e136] [cursor=pointer]:
+            - /url: /generative-ui/open-generative-ui
+        - listitem [ref=e137]:
+          - link "Declarative Gen-UI (A2UI)" [ref=e138] [cursor=pointer]:
+            - /url: /generative-ui/a2ui
+        - listitem [ref=e139]:
+          - generic [ref=e140]: App Control
+        - listitem [ref=e142]:
+          - link "Frontend Tools" [ref=e143] [cursor=pointer]:
+            - /url: /frontend-tools
+        - listitem [ref=e144]:
+          - link "Shared State" [ref=e145] [cursor=pointer]:
+            - /url: /shared-state
+        - listitem [ref=e146]:
+          - generic [ref=e147]: Backend
+        - listitem [ref=e149]:
+          - link "Copilot Runtime" [ref=e150] [cursor=pointer]:
+            - /url: /backend/copilot-runtime
+        - listitem [ref=e151]:
+          - link "Factory Mode" [ref=e152] [cursor=pointer]:
+            - /url: /backend/custom-agent
+        - listitem [ref=e153]:
+          - link "AG-UI" [ref=e154] [cursor=pointer]:
+            - /url: /backend/ag-ui
+        - listitem [ref=e155]:
+          - generic [ref=e156]: Premium Features
+        - listitem [ref=e158]:
+          - link "CopilotKit Premium" [ref=e159] [cursor=pointer]:
+            - /url: /premium/overview
+        - listitem [ref=e160]:
+          - link "Observability" [ref=e161] [cursor=pointer]:
+            - /url: /premium/observability
+        - listitem [ref=e162]:
+          - generic [ref=e163]: Migration Guides
+        - listitem [ref=e165]:
+          - link "Migrate to V2" [ref=e166] [cursor=pointer]:
+            - /url: /migration-guides/migrate-to-v2
+        - listitem [ref=e167]:
+          - link "Migrate to Multimodal Attachments" [ref=e168] [cursor=pointer]:
+            - /url: /migration-guides/migrate-attachments
+        - listitem [ref=e169]:
+          - link "Migrate to 1.10.X" [ref=e170] [cursor=pointer]:
+            - /url: /migration-guides/migrate-to-1.10.X
+        - listitem [ref=e171]:
+          - link "Migrate to 1.8.2" [ref=e172] [cursor=pointer]:
+            - /url: /migration-guides/migrate-to-1.8.2
+        - listitem [ref=e173]:
+          - generic [ref=e174]: Troubleshooting
+        - listitem [ref=e176]:
+          - link "Error Debugging" [ref=e177] [cursor=pointer]:
+            - /url: /troubleshooting/error-debugging
+        - listitem [ref=e178]:
+          - link "Debug Mode" [ref=e179] [cursor=pointer]:
+            - /url: /troubleshooting/debug-mode
+        - listitem [ref=e180]:
+          - link "Error Observability Connectors" [ref=e181] [cursor=pointer]:
+            - /url: /troubleshooting/observability-connectors
+        - listitem [ref=e182]:
+          - link "Common Copilot Issues" [ref=e183] [cursor=pointer]:
+            - /url: /troubleshooting/common-issues
+        - listitem [ref=e184]:
+          - generic [ref=e185]: Other
+        - listitem [ref=e188]:
+          - button "Contributing" [ref=e189] [cursor=pointer]:
+            - generic [ref=e190]: Contributing
+            - img [ref=e191]
+        - listitem [ref=e194]:
+          - button "Anonymous Telemetry" [ref=e195] [cursor=pointer]:
+            - generic [ref=e196]: Anonymous Telemetry
+            - img [ref=e197]
+        - listitem [ref=e200]:
+          - button "Reference" [ref=e201] [cursor=pointer]:
+            - generic [ref=e202]: Reference
+            - img [ref=e203]
+        - listitem [ref=e205]:
+          - generic [ref=e206]: Integrations
+        - listitem [ref=e208] [cursor=pointer]:
+          - link "Built-in Agent" [ref=e209]:
+            - /url: /built-in-agent
+            - generic [ref=e210]:
+              - img [ref=e211]
+              - text: Built-in Agent
+            - img [ref=e217]
+        - listitem [ref=e219] [cursor=pointer]:
+          - link "LangChain" [ref=e220]:
+            - /url: /langgraph
+            - generic [ref=e221]:
+              - img [ref=e222]
+              - text: LangChain
+            - img [ref=e227]
+        - listitem [ref=e229] [cursor=pointer]:
+          - link "ADK" [ref=e230]:
+            - /url: /adk
+            - generic [ref=e231]:
+              - img [ref=e232]
+              - text: ADK
+            - img [ref=e243]
+        - listitem [ref=e245] [cursor=pointer]:
+          - link "Microsoft Agent Framework" [ref=e246]:
+            - /url: /microsoft-agent-framework
+            - generic [ref=e247]:
+              - img [ref=e248]
+              - text: Microsoft Agent Framework
+            - img [ref=e250]
+        - listitem [ref=e252] [cursor=pointer]:
+          - link "AWS Strands" [ref=e253]:
+            - /url: /aws-strands
+            - generic [ref=e254]:
+              - img [ref=e255]
+              - text: AWS Strands
+            - img [ref=e259]
+        - listitem [ref=e261] [cursor=pointer]:
+          - link "Mastra" [ref=e262]:
+            - /url: /mastra
+            - generic [ref=e263]:
+              - img [ref=e264]
+              - text: Mastra
+            - img [ref=e271]
+        - listitem [ref=e273] [cursor=pointer]:
+          - link "Pydantic AI" [ref=e274]:
+            - /url: /pydantic-ai
+            - generic [ref=e275]:
+              - img [ref=e276]
+              - text: Pydantic AI
+            - img [ref=e278]
+        - listitem [ref=e280] [cursor=pointer]:
+          - link "CrewAI Flows" [ref=e281]:
+            - /url: /crewai-flows
+            - generic [ref=e282]:
+              - img [ref=e283]
+              - text: CrewAI Flows
+            - img [ref=e285]
+        - listitem [ref=e287] [cursor=pointer]:
+          - link "Agno" [ref=e288]:
+            - /url: /agno
+            - generic [ref=e289]:
+              - img [ref=e290]
+              - text: Agno
+            - img [ref=e293]
+        - listitem [ref=e295] [cursor=pointer]:
+          - link "AG2" [ref=e296]:
+            - /url: /ag2
+            - generic [ref=e297]:
+              - img [ref=e298]
+              - text: AG2
+            - img [ref=e304]
+        - listitem [ref=e306] [cursor=pointer]:
+          - link "Open Agent Spec" [ref=e307]:
+            - /url: /agent-spec
+            - generic [ref=e308]:
+              - img [ref=e309]
+              - text: Open Agent Spec
+            - img [ref=e313]
+        - listitem [ref=e315] [cursor=pointer]:
+          - link "LlamaIndex" [ref=e316]:
+            - /url: /llamaindex
+            - generic [ref=e317]:
+              - img [ref=e318]
+              - text: LlamaIndex
+            - img [ref=e320]
+        - listitem [ref=e322] [cursor=pointer]:
+          - link "A2A" [ref=e323]:
+            - /url: /a2a
+            - generic [ref=e324]:
+              - img [ref=e325]
+              - text: A2A
+            - img [ref=e334]
+    - generic [ref=e339]:
+      - link "Logo" [ref=e342] [cursor=pointer]:
+        - /url: /
+        - img "Logo" [ref=e343]
+      - generic [ref=e344]:
+        - heading "404" [level=1] [ref=e345]
+        - heading "Page Not Found" [level=2] [ref=e346]
+        - paragraph [ref=e347]: Sorry, we couldn't find the page you're looking for. The link may be outdated or the page may have moved.
+      - generic [ref=e348]:
+        - link "Go Home" [ref=e349] [cursor=pointer]:
+          - /url: /
+          - img [ref=e350]
+          - text: Go Home
+        - button "Go Back" [ref=e353]:
+          - img [ref=e354]
+          - text: Go Back
