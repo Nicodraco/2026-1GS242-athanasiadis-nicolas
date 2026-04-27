@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ShoppingBag } from "lucide-react";
 
 type CheckoutButtonProps = {
   productId: string;
@@ -22,26 +23,23 @@ export function CheckoutButton({ productId, userId, userEmail }: CheckoutButtonP
       });
 
       const rawBody = await response.text();
-      let parsedBody: { error?: string; checkoutUrl?: string } | null = null;
-
+      let parsed: { error?: string; checkoutUrl?: string } | null = null;
       try {
-        parsedBody = JSON.parse(rawBody) as { error?: string; checkoutUrl?: string };
+        parsed = JSON.parse(rawBody) as { error?: string; checkoutUrl?: string };
       } catch {
-        parsedBody = null;
+        parsed = null;
       }
 
       if (!response.ok) {
-        throw new Error(parsedBody?.error ?? "No se pudo iniciar el checkout.");
+        throw new Error(parsed?.error ?? "No se pudo iniciar el checkout.");
       }
-
-      if (!parsedBody?.checkoutUrl) {
+      if (!parsed?.checkoutUrl) {
         throw new Error("Stripe no devolvió una URL de checkout válida.");
       }
 
-      window.location.href = parsedBody.checkoutUrl;
+      window.location.href = parsed.checkoutUrl;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error inesperado en el checkout.";
-      setError(message);
+      setError(err instanceof Error ? err.message : "Error inesperado en el checkout.");
     } finally {
       setLoading(false);
     }
@@ -49,8 +47,20 @@ export function CheckoutButton({ productId, userId, userEmail }: CheckoutButtonP
 
   return (
     <div className="stack">
-      <button className="button button-primary" type="button" onClick={handleCheckout}>
-        {loading ? "Redirigiendo..." : "Comprar kit"}
+      <button
+        className="button button-primary button-block"
+        type="button"
+        onClick={handleCheckout}
+        disabled={loading}
+      >
+        {loading ? (
+          "Redirigiendo..."
+        ) : (
+          <>
+            <ShoppingBag size={15} />
+            Comprar kit
+          </>
+        )}
       </button>
       {error ? <p className="status-error">{error}</p> : null}
     </div>

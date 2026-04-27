@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.6",
+    "gsap": "^3.15.0",
+    "lucide-react": "^1.11.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-router-dom": "^7.9.6",
@@ -24,11 +26,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@vitejs/plugin-react": "^6.0.1",
     "@playwright/test": "^1.59.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.1",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.1.1",
