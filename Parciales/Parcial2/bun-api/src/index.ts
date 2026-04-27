@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import {
   listInventory,
   listOrders,
+  listOrdersByBuyer,
   listPendingOrders,
   OrderStatus,
   updateInventory,
@@ -182,7 +183,9 @@ Bun.serve({
 
     if (req.method === "GET" && url.pathname === "/orders") {
       await refreshPendingOrdersWithStripe();
-      return jsonResponse({ data: listOrders() }, { origin });
+      const buyerId = url.searchParams.get("buyerId")?.trim();
+      const data = buyerId ? listOrdersByBuyer(buyerId) : listOrders();
+      return jsonResponse({ data }, { origin });
     }
 
     if (req.method === "PATCH" && url.pathname.startsWith("/orders/")) {

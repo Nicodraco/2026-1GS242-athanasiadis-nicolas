@@ -3,10 +3,12 @@ import {
   SignInButton,
   SignUp,
   UserButton,
+  UserProfile,
   useUser,
 } from "@clerk/clerk-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { DashboardOrders } from "@/components/dashboard-orders";
 
 import { Nav } from "@/components/nav";
 import { HeroSection } from "@/components/hero";
@@ -24,16 +26,36 @@ type UserState = ReturnType<typeof useUser>["user"];
 
 // ── Home page (comparte estado de user como prop) ──────────────────
 function HomePage({ user, clerkReady }: { user: UserState; clerkReady: boolean }) {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    const sticky = stickyRef.current;
+    if (!hero || !sticky) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        sticky.style.display = entry.isIntersecting ? "none" : "block";
+      },
+      { threshold: 0, rootMargin: "0px" },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main>
-      <HeroSection user={user} clerkReady={clerkReady} />
+      <div ref={heroRef}>
+        <HeroSection user={user} clerkReady={clerkReady} />
+      </div>
       <FeaturesSection />
       <ProductsSection user={user} />
       <SocialProofSection />
       <CTABandSection user={user} clerkReady={clerkReady} />
       <FAQSection />
-      {/* Sticky CTA mobile */}
-      <div className="sticky-cta">
+      {/* Sticky CTA mobile — visible only after hero leaves viewport */}
+      <div ref={stickyRef} className="sticky-cta" style={{ display: "none" }}>
         <div className="sticky-cta-inner">
           <span className="sticky-cta-text">Kits desde $24.90 USD</span>
           <a href="#catalogo" className="button button-white">
@@ -119,44 +141,56 @@ function DashboardPage() {
 
   return (
     <main className="container page-pad">
-      <section className="stack panel" style={{ maxWidth: "720px" }}>
-        <h1 className="section-title" style={{ marginBottom: 0 }}>
-          Mi cuenta
-        </h1>
-        <span className="role-badge">Tipo de usuario: {role}</span>
+      <div className="stack" style={{ maxWidth: "720px", gap: "var(--s4)" }}>
+        <section className="stack panel">
+          <h1 className="section-title" style={{ marginBottom: 0 }}>
+            Mi cuenta
+          </h1>
+          <span className="role-badge">Tipo de usuario: {role}</span>
 
-        {payment === "success" && (
-          <p className="status-success">
-            Pago completado. Tu kit está en preparación 🌱
-          </p>
-        )}
-        {payment === "cancelled" && (
-          <p className="status-error">
-            Pago cancelado. Puedes intentarlo otra vez cuando quieras.
-          </p>
-        )}
-        {!payment && (
-          <p style={{ color: "var(--ash)" }}>
-            Desde aquí gestionas tus compras y accesos.
-          </p>
-        )}
-
-        <div className="cta-row">
-          <Link className="button button-primary" to="/">
-            Volver al catálogo
-          </Link>
-          {role === "admin" && (
-            <a
-              className="button button-outline"
-              href={adminAppUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Ir al backoffice
-            </a>
+          {payment === "success" && (
+            <p className="status-success">
+              Pago completado. Tu kit está en preparación 🌱
+            </p>
           )}
-        </div>
-      </section>
+          {payment === "cancelled" && (
+            <p className="status-error">
+              Pago cancelado. Puedes intentarlo otra vez cuando quieras.
+            </p>
+          )}
+          {!payment && (
+            <p style={{ color: "var(--ash)" }}>
+              Desde aquí gestionas tus compras y accesos.
+            </p>
+          )}
+
+          <div className="cta-row">
+            <Link className="button button-primary" to="/">
+              Volver al catálogo
+            </Link>
+            <Link className="button button-outline" to="/perfil">
+              Mi perfil
+            </Link>
+            {role === "admin" && (
+              <a
+                className="button button-outline"
+                href={adminAppUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ir al backoffice
+              </a>
+            )}
+          </div>
+        </section>
+
+        <section className="panel stack">
+          <h2 className="section-title" style={{ fontSize: "var(--t-xl)", marginBottom: 0 }}>
+            Mis compras
+          </h2>
+          {user && <DashboardOrders userId={user.id} />}
+        </section>
+      </div>
     </main>
   );
 }
@@ -220,6 +254,16 @@ function AppWithClerk() {
           element={
             <RequireAuth>
               <DashboardPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <RequireAuth>
+              <main className="container page-pad">
+                <UserProfile path="/perfil" routing="path" />
+              </main>
             </RequireAuth>
           }
         />
