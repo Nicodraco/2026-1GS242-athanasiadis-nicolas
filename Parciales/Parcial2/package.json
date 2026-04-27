@@ -2,27 +2,41 @@
   "name": "parcial2-urbansprout",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "concurrently -k -n api,storefront -c green,cyan \"npm run dev:api\" \"npm run dev:storefront\"",
+    "dev:storefront": "vite",
+    "dev:admin": "kill-port 5173 && npm --prefix admin-backoffice run dev -- --host 0.0.0.0 --port 5173",
+    "dev:api": "bun --watch bun-api/src/index.ts",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "lint": "eslint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down -v"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.2.3",
-    "next": "16.2.4",
+    "@clerk/clerk-react": "^5.61.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-router-dom": "^7.9.6",
     "stripe": "^22.0.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@vitejs/plugin-react": "^6.0.1",
     "@playwright/test": "^1.59.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
-    "typescript": "^5"
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "kill-port": "^2.0.1",
+    "typescript": "^5",
+    "typescript-eslint": "^8.58.2",
+    "vite": "^8.0.10"
   }
 }

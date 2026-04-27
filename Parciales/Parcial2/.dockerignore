@@ -1,0 +1,9 @@
+node_modules
+admin-backoffice/node_modules
+bun-api/node_modules
+playwright-report
+test-results
+dist
+*.log
+data
+admin-backoffice/dist

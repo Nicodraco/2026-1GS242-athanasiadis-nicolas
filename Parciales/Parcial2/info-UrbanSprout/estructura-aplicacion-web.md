@@ -2,36 +2,35 @@
 
 ## 1) Vista general
 
-UrbanSprout es una app en **Next.js (App Router) + TypeScript** con estas capas principales:
+UrbanSprout usa una arquitectura dividida:
 
-1. **UI y rutas** en `src/app`
-2. **Componentes reutilizables** en `src/components`
-3. **Logica de negocio e integraciones** en `src/lib`
-4. **Proteccion de rutas** en `src/proxy.ts`
+1. **Storefront** en **React + Vite** (`src/`).
+2. **Backoffice admin** en **React + Vite** (`admin-backoffice/`).
+3. **Servicio API + datos** en **Bun** (`bun-api/`).
+4. **Orquestación** de todo el stack en `docker-compose.yml`.
 
 ---
 
 ## 2) Estructura por carpetas
 
 ```text
-src/
-  app/
-    page.tsx                      -> landing + catalogo
-    dashboard/page.tsx            -> panel de cliente (y estado de pago)
-    admin/page.tsx                -> vista admin
-    sign-in/[[...sign-in]]/page.tsx
-    sign-up/[[...sign-up]]/page.tsx
-    api/checkout/route.ts         -> endpoint para crear sesion de Stripe
-    layout.tsx                    -> layout global
-    globals.css                   -> estilos globales
-  components/
-    checkout-button.tsx           -> boton cliente para iniciar compra
+src/                               -> storefront React + Vite
+  App.tsx                          -> rutas /, /dashboard, /sign-in, /sign-up, /admin
+  main.tsx                         -> bootstrap + ClerkProvider + Router
+  styles.css                       -> estilos globales
   lib/
-    catalog.ts                    -> productos del catalogo
-    roles.ts                      -> resolucion de rol (cliente/admin)
-    stripe.ts                     -> wrapper interno de Stripe
-    env.ts                        -> validacion de variables de entorno
-  proxy.ts                        -> middleware de Clerk para proteger rutas
+    env.ts                         -> variables y URL de backoffice
+    roles.ts                       -> rol cliente/admin
+    catalog.ts                     -> productos del catalogo
+  components/
+    checkout-button.tsx            -> compra por /api/checkout (proxy Vite)
+
+admin-backoffice/                  -> app React + Vite para admin
+  src/App.tsx                      -> ordenes e inventario
+
+bun-api/                           -> API Bun + SQLite
+  src/index.ts                     -> endpoints health/orders/inventory/webhook
+  src/db.ts                        -> esquema y operaciones SQLite
 ```
 
 ---
@@ -41,36 +40,34 @@ src/
 ### Landing y compra
 
 1. El usuario entra a `/` y ve productos desde `lib/catalog.ts`.
-2. `CheckoutButton` llama `POST /api/checkout` con `productId`.
-3. `api/checkout/route.ts` valida:
-   - Clerk configurado
-   - Stripe configurado
-   - usuario autenticado
-   - producto valido
-4. Se crea la sesion con `InternalStripeSDK` (`lib/stripe.ts`) y se redirige a Stripe Checkout.
+2. `CheckoutButton` llama `POST /api/checkout` (proxy Vite) con `productId` y contexto de usuario.
+3. El API Bun valida autenticación básica, producto y Stripe configurado.
+4. El API crea la sesión en Stripe y devuelve URL de checkout.
 5. Stripe devuelve a `/dashboard?payment=success` o `?payment=cancelled`.
 
 ### Autenticacion y acceso
 
-- `proxy.ts` protege `/dashboard` y `/admin` usando Clerk.
+- `App.tsx` implementa guards de navegación para `/dashboard`.
 - `roles.ts` decide el rol:
   - `admin` por metadata de Clerk (`role=admin`) o por email incluido en `ADMIN_EMAILS`.
   - si no, `cliente`.
 
-### Vista admin
+### Vista admin (backoffice separado)
 
-- `/admin` es una vista protegida por autenticacion + rol admin.
-- Si el usuario no es admin, muestra "Acceso restringido".
+- `/admin` en Next funciona como puente y enlace al backoffice externo.
+- El backoffice real corre en `http://localhost:5173` (Vite).
+- La data se obtiene del API Bun en `http://localhost:4000`.
 
 ---
 
 ## 4) Donde modificar cada cosa
 
 - **Catalogo y precios:** `src/lib/catalog.ts`
-- **Reglas de rol/admin:** `src/lib/roles.ts` y variable `ADMIN_EMAILS` en `.env.local`
-- **Comportamiento de checkout:** `src/app/api/checkout/route.ts` y `src/lib/stripe.ts`
-- **Texto/estructura de pantallas:** `src/app/**/page.tsx`
-- **Proteccion de rutas:** `src/proxy.ts`
+- **Reglas de rol/admin en storefront:** `src/lib/roles.ts` y `ADMIN_EMAILS`
+- **Comportamiento de checkout:** `src/components/checkout-button.tsx` y `bun-api/src/index.ts`
+- **Backoffice admin:** `admin-backoffice/src/**`
+- **API y base de datos (Bun):** `bun-api/src/**`
+- **Stack completo:** `docker-compose.yml`
 
 ---
 
@@ -80,5 +77,7 @@ src/
 - `/sign-in` -> Login
 - `/sign-up` -> Registro
 - `/dashboard` -> Cuenta del usuario
-- `/admin` -> Vista de administracion
-- `/api/checkout` -> API de compra
+- `/admin` -> Enlace a backoffice externo
+- `/api/checkout` -> Proxy Vite hacia API de compra en Bun
+- `http://localhost:5173` -> Backoffice admin (Vite)
+- `http://localhost:4000/health` -> Salud del API Bun

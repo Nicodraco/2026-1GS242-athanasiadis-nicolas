@@ -1,8 +1,12 @@
-"use client";
-
 import { useState } from "react";
 
-export function CheckoutButton({ productId }: { productId: string }) {
+type CheckoutButtonProps = {
+  productId: string;
+  userId: string | null;
+  userEmail: string | null;
+};
+
+export function CheckoutButton({ productId, userId, userEmail }: CheckoutButtonProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -14,7 +18,7 @@ export function CheckoutButton({ productId }: { productId: string }) {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify({ productId, userId, userEmail }),
       });
 
       const rawBody = await response.text();

@@ -66,14 +66,7 @@ test("admin: protege o renderiza estado esperado", async ({ page }) => {
   const response = await page.goto("/admin");
   expect(response).not.toBeNull();
   expect(response!.status()).toBeLessThan(500);
-
-  if (page.url().includes("/sign-in")) {
-    await expect(page).toHaveURL(/\/sign-in/);
-    await expect(page.locator("main")).toBeVisible();
-    return;
-  }
-
-  await expectAnyVisibleText(page, ["Panel admin", "Acceso restringido"]);
+  await expectAnyVisibleText(page, ["Backoffice separado", "Abrir backoffice"]);
 });
 
 test("api checkout: devuelve error controlado para producto inválido", async ({ page }) => {

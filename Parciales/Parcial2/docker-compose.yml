@@ -1,0 +1,47 @@
+services:
+  storefront:
+    build:
+      context: .
+      dockerfile: Dockerfile.storefront
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_ADMIN_APP_URL: http://localhost:5173
+      VITE_API_URL: http://localhost:4000
+      APP_URL: http://localhost:3000
+    env_file:
+      - .env.local
+    depends_on:
+      - bun-api
+
+  backoffice:
+    build:
+      context: .
+      dockerfile: Dockerfile.backoffice
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:4000
+      VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
+    env_file:
+      - .env.local
+    depends_on:
+      - bun-api
+
+  bun-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.bun-api
+    ports:
+      - "4000:4000"
+    environment:
+      API_PORT: 4000
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      BUN_DB_PATH: /data/urbansprout.sqlite
+    volumes:
+      - bun-data:/data
+
+volumes:
+  bun-data:
