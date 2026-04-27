@@ -258,7 +258,7 @@ function AppWithClerk() {
           }
         />
         <Route
-          path="/perfil"
+          path="/perfil/*"
           element={
             <RequireAuth>
               <main className="container page-pad">

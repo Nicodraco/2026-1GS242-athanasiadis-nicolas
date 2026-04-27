@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type CheckoutButtonProps = {
   productId: string;
@@ -10,6 +11,18 @@ type CheckoutButtonProps = {
 export function CheckoutButton({ productId, userId, userEmail }: CheckoutButtonProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  if (!userId) {
+    return (
+      <Link
+        to="/sign-in"
+        className="button button-primary button-block"
+      >
+        <LogIn size={15} />
+        Iniciar sesión para comprar
+      </Link>
+    );
+  }
 
   async function handleCheckout() {
     setError(null);
