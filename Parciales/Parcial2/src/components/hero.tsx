@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { Leaf, Check, ArrowRight } from "lucide-react";
+import { ArrowRight, Leaf } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useMagneticButton } from "@/lib/useMagneticButton";
 
 type UserState = { id: string } | null | undefined;
 
@@ -11,144 +12,215 @@ interface HeroProps {
 }
 
 const WORDS = ["Cosecha", "fresco", "cada", "semana,", "sin", "jardín."];
-const ITALIC = new Set([1]); // "fresco" en itálica
-
-const INCLUDES = [
-  "Semillas de ciclo corto",
-  "Maceta compacta + sustrato",
-  "Guía de riego y luz",
-  "Soporte primeras 2 semanas",
-];
+const ITALIC = new Set([1]);
 
 export function HeroSection({ user, clerkReady }: HeroProps) {
   const ref = useRef<HTMLElement>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
+  const { ref: ctaRef, onMouseMove, onMouseLeave } = useMagneticButton<HTMLAnchorElement>(0.3);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 0.08 });
+      // Split lines entrance
+      const tl = gsap.timeline({ delay: 0.1 });
 
-      tl.from(".hero-eyebrow", { opacity: 0, y: 14, duration: 0.45 })
-        .from(
+      tl.fromTo(
+        ".hero-kicker",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+      )
+        .fromTo(
           ".hero-word",
-          {
-            opacity: 0,
-            y: 44,
-            rotationX: -18,
-            stagger: 0.07,
-            duration: 0.62,
-            ease: "back.out(1.4)",
-          },
+          { opacity: 0, yPercent: 110, rotationX: -25 },
+          { opacity: 1, yPercent: 0, rotationX: 0, stagger: 0.06, duration: 0.7, ease: "back.out(1.6)" },
           "-=0.2",
         )
-        .from(".hero-sub", { opacity: 0, y: 18, duration: 0.5 }, "-=0.28")
-        .from(".hero-cta-row", { opacity: 0, y: 14, duration: 0.45 }, "-=0.28")
-        .from(".hero-trust", { opacity: 0, duration: 0.4 }, "-=0.2")
-        .from(
-          ".hero-card-bg",
-          { opacity: 0, scale: 0.82, rotation: 9, duration: 0.65, ease: "back.out(1.2)" },
-          0.32,
+        .fromTo(
+          ".hero-sub",
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          "-=0.35",
         )
-        .from(
-          ".hero-card-main",
-          { opacity: 0, scale: 0.88, y: 22, duration: 0.7, ease: "back.out(1.2)" },
-          0.46,
+        .fromTo(
+          ".hero-actions",
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+          "-=0.3",
+        )
+        .fromTo(
+          ".hero-proof",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4 },
+          "-=0.2",
         );
+
+      // Image entrance — brutalist slam
+      tl.fromTo(
+        ".hero-img-wrap",
+        { opacity: 0, scale: 0.84, rotation: -6 },
+        { opacity: 1, scale: 1, rotation: 3, duration: 0.9, ease: "back.out(1.4)" },
+        0.3,
+      );
+
+      // Floating label animations
+      tl.fromTo(
+        ".hero-float-label",
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, stagger: 0.1, duration: 0.5, ease: "power3.out" },
+        "-=0.4",
+      );
+
+      // Continuous float
+      gsap.to(".hero-img-wrap", {
+        y: -12,
+        rotation: 2,
+        duration: 3.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1.2,
+      });
+
+      // Parallax on scroll
+      gsap.to(".hero-img-wrap", {
+        yPercent: 18,
+        ease: "none",
+        scrollTrigger: { trigger: ref.current, start: "top top", end: "bottom top", scrub: 1.2 },
+      });
+
+      gsap.to(".hero-copy", {
+        yPercent: -8,
+        ease: "none",
+        scrollTrigger: { trigger: ref.current, start: "top top", end: "bottom top", scrub: 0.8 },
+      });
     }, ref);
 
     return () => ctx.revert();
   }, []);
 
+  // Mouse parallax on image
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX / innerWidth - 0.5) * 18;
+      const y = (e.clientY / innerHeight - 0.5) * 12;
+      gsap.to(el, { rotateY: x, rotateX: -y, duration: 0.6, ease: "power2.out", transformPerspective: 800 });
+    };
+    const onLeave = () => {
+      gsap.to(el, { rotateY: 0, rotateX: 0, duration: 1, ease: "elastic.out(1,0.4)" });
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   return (
-    <section className="hero" ref={ref}>
-      <div className="container hero-grid">
-        {/* — Columna de texto — */}
-        <div>
-          <div className="hero-eyebrow">
-            <span className="badge">
+    <section className="hero hero-v2" ref={ref} data-section="hero">
+      {/* Grain overlay */}
+      <div className="hero-grain" aria-hidden />
+
+      <div className="container hero-v2-grid">
+        {/* ── Copy ── */}
+        <div className="hero-copy">
+          <div className="hero-kicker">
+            <span className="kicker-badge">
               <Leaf size={11} />
-              Sostenible desde casa
+              Kits de cultivo urbano
             </span>
           </div>
 
-          <h1 className="hero-title">
+          <h1 className="hero-v2-title" style={{ perspective: "600px" }}>
             {WORDS.map((word, i) => (
-              <span key={i} className="hero-word">
-                {ITALIC.has(i) ? <em>{word}</em> : word}
-                {i < WORDS.length - 1 ? " " : ""}
+              <span key={i} className="hero-word-wrap">
+                <span className="hero-word">
+                  {ITALIC.has(i) ? <em>{word}</em> : word}
+                </span>
+                {i < WORDS.length - 1 && " "}
               </span>
             ))}
           </h1>
 
-          <p className="hero-sub">
-            Kits todo-incluido con semillas, macetas y guía práctica.
-            Primeras cosechas en menos de tres semanas.
+          <p className="hero-v2-sub hero-sub">
+            Kits todo-incluido: semillas, macetas y guía práctica.
+            <br />
+            <strong>Primera cosecha en menos de 3 semanas.</strong>
           </p>
 
-          <div className="hero-cta-row">
-            <a className="button button-primary button-lg" href="#catalogo">
+          <div className="hero-actions">
+            <a
+              ref={ctaRef}
+              onMouseMove={onMouseMove}
+              onMouseLeave={onMouseLeave}
+              href="#catalogo"
+              className="button button-brutal-primary"
+            >
               Ver los kits
-              <ArrowRight size={16} />
+              <ArrowRight size={17} />
             </a>
+
             {user ? (
-              <Link to="/dashboard" className="button button-outline button-lg">
-                Mi cuenta
+              <Link to="/dashboard" className="button button-ghost-dark">
+                Mi cuenta →
               </Link>
             ) : clerkReady ? (
-              <Link to="/sign-up" className="button button-outline button-lg">
-                Crear cuenta gratis
+              <Link to="/sign-up" className="button button-ghost-dark">
+                Crear cuenta gratis →
               </Link>
             ) : null}
           </div>
 
-          <div className="hero-trust">
-            <span>Envío en 48 h</span>
-            <span className="hero-trust-sep" />
-            <span>Garantía 2 semanas</span>
-            <span className="hero-trust-sep" />
-            <span>Pago seguro con Stripe</span>
+          <div className="hero-proof">
+            <span>✓ Envío en 48 h</span>
+            <span>✓ Garantía 2 semanas</span>
+            <span>✓ +1,200 clientes</span>
           </div>
         </div>
 
-        {/* — Columna visual — */}
-        <div className="hero-visual">
-          <div className="hero-card-stack">
-            <div className="hero-card-bg" />
-            <div className="hero-card-main">
-              <div className="hero-plant-icon">
-                <Leaf size={26} />
-              </div>
+        {/* ── Visual ── */}
+        <div className="hero-v2-visual" ref={imgRef}>
+          <div className="hero-img-wrap">
+            {/* Main image */}
+            <img
+              src="https://images.unsplash.com/photo-1585399000684-d2f72660f092?w=700&q=85&auto=format&fit=crop"
+              alt="Kit de cultivo urbano en balcón"
+              className="hero-main-img"
+              loading="eager"
+            />
 
-              <div className="hero-card-tag-row">
-                <h3 className="hero-card-name">Kit Balcón Básico</h3>
-                <span className="tag">Inicio</span>
-              </div>
+            {/* Brutalist border card */}
+            <div className="hero-brutal-frame" aria-hidden />
 
-              <ul className="hero-card-includes">
-                {INCLUDES.map((item) => (
-                  <li key={item}>
-                    <span className="hero-check">
-                      <Check size={9} strokeWidth={3} />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            {/* Floating label 1 */}
+            <div className="hero-float-label hero-float-1">
+              <span className="float-dot" />
+              Lista en 3 semanas
+            </div>
 
-              <div className="hero-card-footer">
-                <div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "0.3rem" }}>
-                    <span className="hero-card-price">$24.90</span>
-                    <span className="hero-card-currency">USD</span>
-                  </div>
-                </div>
-                <a href="#catalogo" className="button button-primary">
-                  Ver kits
-                  <ArrowRight size={13} />
-                </a>
-              </div>
+            {/* Floating label 2 */}
+            <div className="hero-float-label hero-float-2">
+              <span className="float-price">$24.90</span>
+              <span className="float-unit">USD</span>
+            </div>
+
+            {/* Floating label 3 — new */}
+            <div className="hero-float-label hero-float-3">
+              🌱 Todo incluido
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="hero-scroll-hint">
+        <span>scroll</span>
+        <div className="scroll-line" />
       </div>
     </section>
   );

@@ -18,30 +18,58 @@ import { SocialProofSection } from "@/components/social-proof";
 import { CTABandSection } from "@/components/cta-band";
 import { FAQSection } from "@/components/faq";
 import { SiteFooter } from "@/components/site-footer";
+import { Marquee } from "@/components/marquee";
+import { StatsSection } from "@/components/stats";
+import { CustomCursor } from "@/components/cursor";
+import { useLenis } from "@/lib/useLenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 import { getAdminAppUrl, isClerkConfigured } from "@/lib/env";
 import { getUserRole } from "@/lib/roles";
 
 // ── Tipos ──────────────────────────────────────────────────────────
 type UserState = ReturnType<typeof useUser>["user"];
 
-// ── Home page (comparte estado de user como prop) ──────────────────
+// ── Home page ──────────────────────────────────────────────────────
 function HomePage({ user, clerkReady }: { user: UserState; clerkReady: boolean }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
 
+  useLenis();
+
+  // IntersectionObserver for sticky CTA
   useEffect(() => {
     const hero = heroRef.current;
     const sticky = stickyRef.current;
     if (!hero || !sticky) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        sticky.style.display = entry.isIntersecting ? "none" : "block";
-      },
-      { threshold: 0, rootMargin: "0px" },
+      ([entry]) => { sticky.style.display = entry.isIntersecting ? "none" : "block"; },
+      { threshold: 0 },
     );
     observer.observe(hero);
     return () => observer.disconnect();
+  }, []);
+
+  // Color shift on scroll per section
+  useEffect(() => {
+    const shifts = [
+      { selector: "[data-section='hero']",     bg: "#faf9f7" },
+      { selector: "[data-section='products']", bg: "#f0ede5" },
+      { selector: ".features-bg",              bg: "#0c2218" },
+      { selector: ".cta-band",                 bg: "#174230" },
+    ];
+    const triggers = shifts.map(({ selector, bg }) =>
+      ScrollTrigger.create({
+        trigger: selector,
+        start: "top 55%",
+        end: "bottom 45%",
+        onEnter:     () => gsap.to("body", { backgroundColor: bg, duration: 0.7, ease: "power2.out" }),
+        onEnterBack: () => gsap.to("body", { backgroundColor: bg, duration: 0.7, ease: "power2.out" }),
+      }),
+    );
+    return () => triggers.forEach((t) => t.kill());
   }, []);
 
   return (
@@ -49,18 +77,26 @@ function HomePage({ user, clerkReady }: { user: UserState; clerkReady: boolean }
       <div ref={heroRef}>
         <HeroSection user={user} clerkReady={clerkReady} />
       </div>
+
+      {/* Marquee strip 1 */}
+      <Marquee direction="left" speed={30} />
+
+      <StatsSection />
       <FeaturesSection />
+
+      {/* Marquee strip 2 — dark accent */}
+      <Marquee direction="right" speed={24} accent />
+
       <ProductsSection user={user} />
       <SocialProofSection />
       <CTABandSection user={user} clerkReady={clerkReady} />
       <FAQSection />
-      {/* Sticky CTA mobile — visible only after hero leaves viewport */}
+
+      {/* Sticky CTA mobile */}
       <div ref={stickyRef} className="sticky-cta" style={{ display: "none" }}>
         <div className="sticky-cta-inner">
           <span className="sticky-cta-text">Kits desde $24.90 USD</span>
-          <a href="#catalogo" className="button button-white">
-            Ver kits →
-          </a>
+          <a href="#catalogo" className="button button-white">Ver kits →</a>
         </div>
       </div>
     </main>
@@ -244,6 +280,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 function AppWithClerk() {
   return (
     <>
+      <CustomCursor />
       <NavWithClerk />
       <Routes>
         <Route path="/"            element={<HomePageWithClerk />} />
@@ -281,6 +318,7 @@ function AppWithoutClerk() {
 
   return (
     <>
+      <CustomCursor />
       <Nav right={<a href="#catalogo" className="button button-primary">Ver kits</a>} />
       <Routes>
         <Route path="/" element={<HomePage user={null} clerkReady={false} />} />
