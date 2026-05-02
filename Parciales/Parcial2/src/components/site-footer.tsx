@@ -30,25 +30,31 @@ export function SiteFooter() {
           <div>
             <span className="footer-col-title">Empresa</span>
             <div className="footer-links">
-              <a href="#catalogo">Sobre nosotros</a>
+              <a href="#features">Sobre nosotros</a>
               <a href="#faq">Preguntas frecuentes</a>
-              <a href="#catalogo">Contacto</a>
+              <a href="mailto:hola@urbansprout.com">Contacto</a>
             </div>
           </div>
 
           <div>
             <span className="footer-col-title">Legal</span>
             <div className="footer-links">
-              <a href="#catalogo">Términos de servicio</a>
-              <a href="#catalogo">Política de privacidad</a>
-              <a href="#catalogo">Política de devoluciones</a>
+              <Link to="/terminos">Términos de servicio</Link>
+              <Link to="/privacidad">Política de privacidad</Link>
+              <Link to="/devoluciones">Política de devoluciones</Link>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
           <span>© 2026 UrbanSprout. Todos los derechos reservados.</span>
-          <span>React + Vite · Auth Clerk · Pagos Stripe</span>
+          <span className="footer-bottom-links">
+            <Link to="/privacidad">Privacidad</Link>
+            <span>·</span>
+            <Link to="/terminos">Términos</Link>
+            <span>·</span>
+            <a href="mailto:hola@urbansprout.com">Contacto</a>
+          </span>
         </div>
       </div>
     </footer>

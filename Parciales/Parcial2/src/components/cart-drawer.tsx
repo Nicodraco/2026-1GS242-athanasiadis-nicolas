@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart, type CartItem } from "@/lib/cart";
-import { isClerkConfigured } from "@/lib/env";
+import { isClerkConfigured, getApiUrl } from "@/lib/env";
 
 /* ── Constants ─────────────────────────────────────────────────── */
 const FREE_SHIPPING_AT = 55; // USD — umbral para envío gratis
@@ -244,7 +244,7 @@ export function CartDrawer({ userId, userEmail }: CartDrawerProps) {
     setCheckoutError(null);
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/cart-checkout", {
+      const res = await fetch(`${getApiUrl()}/api/cart-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

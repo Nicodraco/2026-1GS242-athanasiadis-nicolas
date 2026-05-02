@@ -3,16 +3,12 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VanillaTilt from "vanilla-tilt";
 import { ShoppingCart, Check, Zap } from "lucide-react";
-import { CheckoutButton } from "@/components/checkout-button";
 import { products } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type UserState =
-  | { id: string; primaryEmailAddress?: { emailAddress: string } | null }
-  | null
-  | undefined;
+type UserState = { id: string } | null | undefined;
 
 const PRODUCT_IMAGES: Record<string, string> = {
   "kit-balcon-basico":
@@ -20,7 +16,7 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "kit-microverde-rapido":
     "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=640&q=85&auto=format&fit=crop",
   "kit-aromaticas-compacto":
-    "https://images.unsplash.com/photo-1524159730786-4e74a1b56560?w=640&q=85&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=640&q=85&auto=format&fit=crop",
 };
 
 const ACCENTS: Record<string, string> = {
@@ -57,11 +53,10 @@ function AddToCartBtn({ productId }: { productId: string }) {
 
 interface ProductCardProps {
   product: (typeof products)[number];
-  user: UserState;
   index: number;
 }
 
-function ProductCard({ product, user, index }: ProductCardProps) {
+function ProductCard({ product, index }: ProductCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const accent = ACCENTS[product.id] ?? "#39ff14";
 
@@ -119,14 +114,7 @@ function ProductCard({ product, user, index }: ProductCardProps) {
             <span className="pcv2-price">${product.priceUsd.toFixed(2)}</span>
             <span className="pcv2-currency">USD</span>
           </div>
-          <div className="pcv2-actions">
-            <AddToCartBtn productId={product.id} />
-            <CheckoutButton
-              productId={product.id}
-              userId={user?.id ?? null}
-              userEmail={user?.primaryEmailAddress?.emailAddress ?? null}
-            />
-          </div>
+          <AddToCartBtn productId={product.id} />
         </div>
       </div>
 
@@ -136,7 +124,7 @@ function ProductCard({ product, user, index }: ProductCardProps) {
   );
 }
 
-export function ProductsSection({ user }: { user: UserState }) {
+export function ProductsSection(_: { user: UserState }) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -167,7 +155,7 @@ export function ProductsSection({ user }: { user: UserState }) {
 
         <div className="products-v2-grid">
           {products.map((p, i) => (
-            <ProductCard key={p.id} product={p} user={user} index={i} />
+            <ProductCard key={p.id} product={p} index={i} />
           ))}
         </div>
       </div>

@@ -273,6 +273,43 @@ function AdminBridgePage() {
   );
 }
 
+// ── Legal placeholder pages ────────────────────────────────────────
+const LEGAL_CONTENT: Record<string, { title: string; body: string }> = {
+  terminos: {
+    title: "Términos de servicio",
+    body: "Al adquirir un kit de UrbanSprout aceptas nuestras condiciones de venta. Los pedidos se procesan en 1-2 días hábiles. El precio mostrado incluye el kit completo. Los pagos se gestionan de forma segura a través de Stripe y nunca almacenamos datos de tu tarjeta.",
+  },
+  privacidad: {
+    title: "Política de privacidad",
+    body: "UrbanSprout recopila únicamente el correo electrónico y datos de envío necesarios para completar tu pedido. No vendemos ni compartimos tu información con terceros. Puedes solicitar la eliminación de tus datos escribiéndonos a hola@urbansprout.com en cualquier momento.",
+  },
+  devoluciones: {
+    title: "Política de devoluciones",
+    body: "Ofrecemos garantía de 2 semanas desde la recepción del kit. Si tus plantas no germinan siguiendo las instrucciones incluidas, te enviamos un kit de reemplazo sin costo. Para iniciar una devolución contáctanos en hola@urbansprout.com indicando tu número de pedido.",
+  },
+};
+
+function LegalPage({ slug }: { slug: "terminos" | "privacidad" | "devoluciones" }) {
+  const { title, body } = LEGAL_CONTENT[slug];
+  return (
+    <main className="container page-pad">
+      <section className="panel stack" style={{ maxWidth: "680px" }}>
+        <Link className="button button-ghost" to="/" style={{ alignSelf: "flex-start", marginBottom: "var(--s2)" }}>
+          ← Volver
+        </Link>
+        <h1 className="section-title" style={{ marginBottom: "var(--s2)" }}>{title}</h1>
+        <p style={{ color: "var(--ash)", lineHeight: 1.75 }}>{body}</p>
+        <p style={{ color: "var(--ash)", marginTop: "var(--s3)" }}>
+          ¿Tienes dudas? Escríbenos a{" "}
+          <a href="mailto:hola@urbansprout.com" style={{ color: "var(--forest)", textDecoration: "underline" }}>
+            hola@urbansprout.com
+          </a>
+        </p>
+      </section>
+    </main>
+  );
+}
+
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   if (user) return <>{children}</>;
@@ -324,6 +361,9 @@ function AppWithClerk() {
           }
         />
         <Route path="/admin"       element={<AdminBridgePage />} />
+        <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
+        <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
+        <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
         <Route path="*"            element={<Navigate to="/" replace />} />
       </Routes>
       <SiteFooter />
@@ -412,6 +452,9 @@ function AppWithoutClerk() {
             </main>
           }
         />
+        <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
+        <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
+        <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SiteFooter />

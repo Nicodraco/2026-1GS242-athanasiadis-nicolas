@@ -792,6 +792,26 @@ button { font-family: inherit; cursor: pointer; }
   transition: color var(--dur-fast) var(--ease-out);
 }
 .footer-links a:hover { color: white; }
+.footer-social {
+  display: flex;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.footer-social-link:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}
 .footer-bottom {
   display: flex;
   align-items: center;
@@ -801,6 +821,16 @@ button { font-family: inherit; cursor: pointer; }
   font-size: var(--t-xs);
   color: rgba(255, 255, 255, 0.28);
 }
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.footer-bottom-links a {
+  color: rgba(255, 255, 255, 0.28);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.footer-bottom-links a:hover { color: rgba(255, 255, 255, 0.7); }
 
 /* ── Orders (dashboard) ─────────────────────────────────────────── */
 .orders-loading {

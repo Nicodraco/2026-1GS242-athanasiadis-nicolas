@@ -48,7 +48,7 @@ export function FeaturesSection() {
   }, []);
 
   return (
-    <section className="section features-bg" ref={ref}>
+    <section id="features" className="section features-bg" ref={ref}>
       <div className="container">
         <div className="section-header features-header">
           <span className="section-label">Por qué funciona</span>
