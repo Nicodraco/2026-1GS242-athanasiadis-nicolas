@@ -1,9 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VanillaTilt from "vanilla-tilt";
+import { ShoppingCart, Check, Zap } from "lucide-react";
 import { CheckoutButton } from "@/components/checkout-button";
 import { products } from "@/lib/catalog";
+import { useCart } from "@/lib/cart";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,6 +28,32 @@ const ACCENTS: Record<string, string> = {
   "kit-microverde-rapido":  "#00e5ff",
   "kit-aromaticas-compacto":"#ff9500",
 };
+
+/* ── Add to Cart button with visual feedback ─────────────────────── */
+function AddToCartBtn({ productId }: { productId: string }) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = () => {
+    addItem(productId);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1600);
+  };
+
+  return (
+    <button
+      className={`btn-add-cart${added ? " btn-add-cart--added" : ""}`}
+      onClick={handleAdd}
+      aria-label={added ? "Añadido al carrito" : "Agregar al carrito"}
+    >
+      {added ? (
+        <><Check size={13} /> Añadido</>
+      ) : (
+        <><ShoppingCart size={13} /> Agregar</>
+      )}
+    </button>
+  );
+}
 
 interface ProductCardProps {
   product: (typeof products)[number];
@@ -70,7 +98,11 @@ function ProductCard({ product, user, index }: ProductCardProps) {
           loading={index === 0 ? "eager" : "lazy"}
         />
         <div className="pcv2-img-overlay" />
-        {isHot && <span className="pcv2-hot-badge">🔥 Más vendido</span>}
+        {isHot && (
+          <span className="pcv2-hot-badge">
+            <Zap size={11} /> Más vendido
+          </span>
+        )}
       </div>
 
       {/* Body */}
@@ -87,11 +119,14 @@ function ProductCard({ product, user, index }: ProductCardProps) {
             <span className="pcv2-price">${product.priceUsd.toFixed(2)}</span>
             <span className="pcv2-currency">USD</span>
           </div>
-          <CheckoutButton
-            productId={product.id}
-            userId={user?.id ?? null}
-            userEmail={user?.primaryEmailAddress?.emailAddress ?? null}
-          />
+          <div className="pcv2-actions">
+            <AddToCartBtn productId={product.id} />
+            <CheckoutButton
+              productId={product.id}
+              userId={user?.id ?? null}
+              userEmail={user?.primaryEmailAddress?.emailAddress ?? null}
+            />
+          </div>
         </div>
       </div>
 

@@ -21,6 +21,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { Marquee } from "@/components/marquee";
 import { StatsSection } from "@/components/stats";
 import { CustomCursor } from "@/components/cursor";
+import { CartDrawer, CartTrigger } from "@/components/cart-drawer";
+import { CartProvider } from "@/lib/cart";
 import { useLenis } from "@/lib/useLenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -109,6 +111,17 @@ function HomePageWithClerk() {
   return <HomePage user={user} clerkReady={isClerkConfigured()} />;
 }
 
+// ── Cart drawer conectado a Clerk (obtiene userId/email) ───────────
+function CartDrawerWithClerk() {
+  const { user } = useUser();
+  return (
+    <CartDrawer
+      userId={user?.id ?? null}
+      userEmail={user?.primaryEmailAddress?.emailAddress ?? null}
+    />
+  );
+}
+
 // ── Nav con datos de Clerk ─────────────────────────────────────────
 function NavWithClerk() {
   const { user } = useUser();
@@ -118,30 +131,35 @@ function NavWithClerk() {
   return (
     <Nav
       right={
-        user ? (
-          <>
-            <Link to="/dashboard" className="button button-ghost">
-              Mi cuenta
-            </Link>
-            {role === "admin" && (
-              <a
-                href={adminAppUrl}
-                className="button button-outline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Admin
-              </a>
-            )}
-            <UserButton />
-          </>
-        ) : (
-          <SignInButton mode="modal">
-            <button className="button button-primary" type="button">
-              Iniciar sesión
-            </button>
-          </SignInButton>
-        )
+        <>
+          {/* Cart siempre visible */}
+          <CartTrigger />
+
+          {user ? (
+            <>
+              <Link to="/dashboard" className="button button-ghost">
+                Mi cuenta
+              </Link>
+              {role === "admin" && (
+                <a
+                  href={adminAppUrl}
+                  className="button button-outline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Admin
+                </a>
+              )}
+              <UserButton />
+            </>
+          ) : (
+            <SignInButton mode="modal">
+              <button className="button button-primary" type="button">
+                Iniciar sesión
+              </button>
+            </SignInButton>
+          )}
+        </>
       }
     />
   );
@@ -282,6 +300,7 @@ function AppWithClerk() {
     <>
       <CustomCursor />
       <NavWithClerk />
+      <CartDrawerWithClerk />
       <Routes>
         <Route path="/"            element={<HomePageWithClerk />} />
         <Route path="/sign-in/*"   element={<SignInPage />} />
@@ -319,7 +338,15 @@ function AppWithoutClerk() {
   return (
     <>
       <CustomCursor />
-      <Nav right={<a href="#catalogo" className="button button-primary">Ver kits</a>} />
+      <Nav
+        right={
+          <>
+            <CartTrigger />
+            <a href="#catalogo" className="button button-primary">Ver kits</a>
+          </>
+        }
+      />
+      <CartDrawer userId={null} userEmail={null} />
       <Routes>
         <Route path="/" element={<HomePage user={null} clerkReady={false} />} />
         <Route
@@ -392,7 +419,11 @@ function AppWithoutClerk() {
   );
 }
 
-// ── Root ───────────────────────────────────────────────────────────
+// ── Root — CartProvider envuelve todo ──────────────────────────────
 export default function App() {
-  return isClerkConfigured() ? <AppWithClerk /> : <AppWithoutClerk />;
+  return (
+    <CartProvider>
+      {isClerkConfigured() ? <AppWithClerk /> : <AppWithoutClerk />}
+    </CartProvider>
+  );
 }

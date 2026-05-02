@@ -188,8 +188,8 @@ export function HeroSection({ user, clerkReady }: HeroProps) {
           <div className="hero-img-wrap">
             {/* Main image */}
             <img
-              src="https://images.unsplash.com/photo-1585399000684-d2f72660f092?w=700&q=85&auto=format&fit=crop"
-              alt="Kit de cultivo urbano en balcón"
+              src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=700&q=85&auto=format&fit=crop"
+              alt="Kit de cultivo urbano — plantas en maceta"
               className="hero-main-img"
               loading="eager"
             />
