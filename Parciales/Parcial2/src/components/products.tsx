@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import VanillaTilt from "vanilla-tilt";
-import { ShoppingCart, Check, Zap } from "lucide-react";
+import { ShoppingCart, Check, Zap, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { products } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 
@@ -84,26 +85,31 @@ function ProductCard({ product, index }: ProductCardProps) {
       className="product-card-v2"
       style={{ "--accent": accent } as React.CSSProperties}
     >
-      {/* Image */}
-      <div className="pcv2-img-wrap">
-        <img
-          src={PRODUCT_IMAGES[product.id]}
-          alt={product.name}
-          className="pcv2-img"
-          loading={index === 0 ? "eager" : "lazy"}
-        />
-        <div className="pcv2-img-overlay" />
-        {isHot && (
-          <span className="pcv2-hot-badge">
-            <Zap size={11} /> Más vendido
-          </span>
-        )}
-      </div>
+      {/* Image — clicking goes to product page */}
+      <Link to={`/producto/${product.id}`} className="pcv2-img-link" tabIndex={-1} aria-hidden="true">
+        <div className="pcv2-img-wrap">
+          <img
+            src={PRODUCT_IMAGES[product.id]}
+            alt={product.name}
+            className="pcv2-img"
+            loading={index === 0 ? "eager" : "lazy"}
+          />
+          <div className="pcv2-img-overlay" />
+          {isHot && (
+            <span className="pcv2-hot-badge">
+              <Zap size={11} /> Más vendido
+            </span>
+          )}
+          <span className="pcv2-view-hint">Ver detalles <ArrowRight size={12} /></span>
+        </div>
+      </Link>
 
       {/* Body */}
       <div className="pcv2-body">
         <div className="pcv2-header">
-          <h3 className="pcv2-name">{product.name}</h3>
+          <Link to={`/producto/${product.id}`} className="pcv2-name-link">
+            <h3 className="pcv2-name">{product.name}</h3>
+          </Link>
           <span className="pcv2-tag">{product.tag}</span>
         </div>
 
@@ -114,7 +120,12 @@ function ProductCard({ product, index }: ProductCardProps) {
             <span className="pcv2-price">${product.priceUsd.toFixed(2)}</span>
             <span className="pcv2-currency">USD</span>
           </div>
-          <AddToCartBtn productId={product.id} />
+          <div className="pcv2-actions">
+            <AddToCartBtn productId={product.id} />
+            <Link to={`/producto/${product.id}`} className="pcv2-details-link">
+              Ver kit
+            </Link>
+          </div>
         </div>
       </div>
 

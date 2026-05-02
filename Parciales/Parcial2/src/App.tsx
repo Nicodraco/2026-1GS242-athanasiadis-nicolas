@@ -22,6 +22,7 @@ import { Marquee } from "@/components/marquee";
 import { StatsSection } from "@/components/stats";
 import { CustomCursor } from "@/components/cursor";
 import { CartDrawer, CartTrigger } from "@/components/cart-drawer";
+import { ProductPage } from "@/components/product-page";
 import { CartProvider } from "@/lib/cart";
 import { useLenis } from "@/lib/useLenis";
 import gsap from "gsap";
@@ -361,6 +362,7 @@ function AppWithClerk() {
           }
         />
         <Route path="/admin"       element={<AdminBridgePage />} />
+        <Route path="/producto/:id" element={<ProductPage />} />
         <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
         <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
         <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
@@ -452,6 +454,7 @@ function AppWithoutClerk() {
             </main>
           }
         />
+        <Route path="/producto/:id" element={<ProductPage />} />
         <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
         <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
         <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
