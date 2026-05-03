@@ -44,8 +44,7 @@ const DETAIL: Record<string, {
       { step: "Días 14-21", text: "¡Tu primera cosecha! Corta las hojas externas y deja crecer el centro." },
     ],
     testimonial: {
-      quote:
-        "En dos semanas tenía lechuga fresca para mis ensaladas. Mi balcón nunca había olido tan bien.",
+      quote: "En dos semanas tenía lechuga fresca para mis ensaladas. Mi balcón nunca había olido tan bien.",
       author: "Sofía M.",
       city: "Madrid",
     },
@@ -78,8 +77,7 @@ const DETAIL: Record<string, {
       { step: "Días 7-10", text: "Cosecha con tijeras cuando midan 5-8 cm. Úsalos en ensaladas o sándwiches." },
     ],
     testimonial: {
-      quote:
-        "Son increíblemente fáciles y el sabor es mucho más intenso que los del supermercado. Los hago cada semana.",
+      quote: "Son increíblemente fáciles y el sabor es mucho más intenso que los del supermercado. Los hago cada semana.",
       author: "Carlos R.",
       city: "Barcelona",
     },
@@ -113,8 +111,7 @@ const DETAIL: Record<string, {
       { step: "Semana 3-4", text: "Empieza a podar las puntas para que la planta se vuelva más densa y productiva." },
     ],
     testimonial: {
-      quote:
-        "El kit de aromáticas transformó mi cocina. Siempre tengo albahaca fresca para la pasta y menta para los cócteles.",
+      quote: "El kit de aromáticas transformó mi cocina. Siempre tengo albahaca fresca para la pasta y menta para los cócteles.",
       author: "Valentina G.",
       city: "Buenos Aires",
     },
@@ -167,10 +164,15 @@ export function ProductPage() {
       tl.fromTo(".pp-tag",         { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, 0.2);
       tl.fromTo(".pp-title",       { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.3);
       tl.fromTo(".pp-tagline",     { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, "-=0.25");
-      tl.fromTo(".pp-price-block", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, "-=0.25");
-      tl.fromTo(".pp-cta-area",    { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, "-=0.2");
-      tl.fromTo(".pp-trust-row",   { opacity: 0 }, { opacity: 1, duration: 0.3 }, "-=0.1");
-      tl.fromTo(".pp-section",     { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: 0.12, duration: 0.6, ease: "power3.out" }, "-=0.1");
+      tl.fromTo(".pp-price-row",   { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, "-=0.25");
+      tl.fromTo(".pp-cta-group",   { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, "-=0.2");
+      tl.fromTo(".pp-trust",       { opacity: 0 }, { opacity: 1, duration: 0.3 }, "-=0.1");
+      tl.fromTo(
+        ".pp-includes, .pp-two-col, .pp-testimonial, .pp-related",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, stagger: 0.12, duration: 0.6, ease: "power3.out" },
+        "-=0.1"
+      );
     }, pageRef);
     return () => ctx.revert();
   }, [id]);
@@ -178,6 +180,7 @@ export function ProductPage() {
   if (!product || !detail) return <Navigate to="/" replace />;
 
   const otherProducts = products.filter((p) => p.id !== product.id);
+  const avatarInitial = detail.testimonial.author.charAt(0);
 
   return (
     <div className="product-page" ref={pageRef}>
@@ -192,19 +195,21 @@ export function ProductPage() {
           <span className="pp-breadcrumb-current">{product.name}</span>
         </nav>
 
-        {/* Hero grid */}
-        <div className="pp-hero-grid">
-
+        {/* ── Hero ── */}
+        <div
+          className="pp-hero"
+          style={{ "--pp-accent": detail.accentColor } as React.CSSProperties}
+        >
           {/* Left — image */}
-          <div className="pp-img-side">
-            <div className="pp-img-frame" style={{ "--pp-accent": detail.accentColor } as React.CSSProperties}>
+          <div className="pp-img-col">
+            <div className="pp-img-frame">
               <img
                 src={detail.image}
                 alt={detail.imageAlt}
                 className="pp-img-hero"
                 loading="eager"
               />
-              <div className="pp-img-border-card" aria-hidden />
+              <div className="pp-img-shadow" aria-hidden />
               <span className="pp-img-badge">
                 <Leaf size={11} /> Kit completo
               </span>
@@ -212,130 +217,152 @@ export function ProductPage() {
           </div>
 
           {/* Right — info */}
-          <div className="pp-info-side">
+          <div className="pp-info-col">
             <div className="pp-tag">{product.tag}</div>
             <h1 className="pp-title">{product.name}</h1>
             <p className="pp-tagline">{detail.tagline}</p>
 
             {/* Price */}
-            <div className="pp-price-block">
+            <div className="pp-price-row">
               <span className="pp-price">${product.priceUsd.toFixed(2)}</span>
               <span className="pp-currency">USD</span>
-              <span className="pp-price-note">· Todo incluido</span>
+              <span className="pp-price-badge">Todo incluido</span>
             </div>
 
-            {/* Quick specs */}
-            <ul className="pp-quick-specs">
+            {/* Quick specs (top 3, inline table) */}
+            <dl className="pp-specs-list">
               {detail.specs.slice(0, 3).map((s) => (
-                <li key={s.label} className="pp-spec-item">
-                  <span className="pp-spec-label">{s.label}</span>
-                  <span className="pp-spec-value">{s.value}</span>
-                </li>
+                <div key={s.label} className="pp-spec-row">
+                  <dt>{s.label}</dt>
+                  <dd>{s.value}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
 
             {/* CTA */}
-            <div className="pp-cta-area">
+            <div className="pp-cta-group">
               <AddToCartLarge productId={product.id} />
-              <a href="/#catalogo" className="pp-back-link">
+              <a href="/#catalogo" className="pp-catalog-link">
                 <ArrowLeft size={14} />
                 Ver todos los kits
               </a>
             </div>
 
-            {/* Trust signals */}
-            <div className="pp-trust-row">
-              <span><Check size={12} /> Envío en 48 h</span>
-              <span><Check size={12} /> Garantía 2 semanas</span>
-              <span><Check size={12} /> Pagos seguros</span>
+            {/* Trust pills */}
+            <div className="pp-trust">
+              <span className="pp-trust-item"><Check size={12} /> Envío en 48 h</span>
+              <span className="pp-trust-item"><Check size={12} /> Garantía 2 semanas</span>
+              <span className="pp-trust-item"><Check size={12} /> Pagos seguros</span>
             </div>
           </div>
         </div>
 
-        {/* ── Detail sections ── */}
-        <div className="pp-details">
-
-          {/* What's included */}
-          <div className="pp-section pp-includes-section">
-            <div className="pp-section-icon"><Package size={20} /></div>
-            <h2 className="pp-section-title">¿Qué incluye el kit?</h2>
-            <ul className="pp-includes-list">
-              {detail.includes.map((item) => (
-                <li key={item} className="pp-includes-item">
-                  <Check size={14} className="pp-check-icon" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Specs grid */}
-          <div className="pp-section pp-specs-section">
-            <div className="pp-section-icon"><Clock size={20} /></div>
-            <h2 className="pp-section-title">Especificaciones</h2>
-            <div className="pp-specs-grid">
-              {detail.specs.map((s) => (
-                <div key={s.label} className="pp-spec-card">
-                  <span className="pp-spec-card-label">{s.label}</span>
-                  <span className="pp-spec-card-value">{s.value}</span>
-                </div>
-              ))}
+        {/* ── What's included ── */}
+        <div className="pp-includes">
+          <div className="pp-block-header">
+            <div>
+              <h2 className="pp-block-title">¿Qué incluye el kit?</h2>
+              <p className="pp-block-sub">Todo lo que necesitas para empezar hoy mismo.</p>
             </div>
+            <span className="pp-includes-count">
+              <Package size={13} /> {detail.includes.length} artículos
+            </span>
           </div>
+          <ul className="pp-includes-grid">
+            {detail.includes.map((item) => (
+              <li key={item} className="pp-includes-item">
+                <Check size={14} className="pp-check-icon" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Steps */}
-          <div className="pp-section pp-steps-section">
-            <div className="pp-section-icon">🌱</div>
-            <h2 className="pp-section-title">Cómo funciona</h2>
-            <div className="pp-steps-list">
+        {/* ── Steps + Specs (two columns) ── */}
+        <div className="pp-two-col">
+
+          {/* Steps card */}
+          <div className="pp-card">
+            <div className="pp-card-header">
+              <div className="pp-card-icon"><span style={{ fontSize: "1.2rem" }}>🌱</span></div>
+              <h2 className="pp-card-title">Cómo funciona</h2>
+            </div>
+            <div className="pp-steps">
               {detail.steps.map((s, i) => (
                 <div key={i} className="pp-step">
-                  <div className="pp-step-badge">{s.step}</div>
-                  <p className="pp-step-text">{s.text}</p>
+                  <div className="pp-step-num">{i + 1}</div>
+                  <div className="pp-step-body">
+                    <div className="pp-step-label">{s.step}</div>
+                    <p className="pp-step-text">{s.text}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Testimonial */}
-          <div className="pp-section pp-testimonial-section" style={{ "--pp-accent": detail.accentColor } as React.CSSProperties}>
-            <div className="pp-testimonial">
-              <div className="pp-testimonial-stars">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill="currentColor" />
-                ))}
-              </div>
-              <blockquote className="pp-testimonial-quote">"{detail.testimonial.quote}"</blockquote>
-              <p className="pp-testimonial-author">
-                — {detail.testimonial.author}, {detail.testimonial.city}
-              </p>
+          {/* Specs card */}
+          <div className="pp-card">
+            <div className="pp-card-header">
+              <div className="pp-card-icon"><Clock size={20} /></div>
+              <h2 className="pp-card-title">Especificaciones</h2>
+            </div>
+            <div className="pp-specs-table">
+              {detail.specs.map((s) => (
+                <div key={s.label} className="pp-spec-card">
+                  <span className="pp-spec-label">{s.label}</span>
+                  <span className="pp-spec-value">{s.value}</span>
+                </div>
+              ))}
             </div>
           </div>
 
         </div>
 
-        {/* ── Other kits ── */}
-        <div className="pp-section pp-other-section">
-          <h2 className="pp-section-title pp-other-title">También te puede interesar</h2>
-          <div className="pp-other-grid">
+        {/* ── Testimonial ── */}
+        <div
+          className="pp-testimonial"
+          style={{ "--pp-accent": detail.accentColor } as React.CSSProperties}
+        >
+          <div className="pp-testimonial-avatar" aria-hidden>
+            {avatarInitial}
+          </div>
+          <div>
+            <div className="pp-testimonial-stars">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={14} fill="currentColor" />
+              ))}
+            </div>
+            <blockquote className="pp-testimonial-quote">
+              "{detail.testimonial.quote}"
+            </blockquote>
+            <p className="pp-testimonial-author">
+              — {detail.testimonial.author}, {detail.testimonial.city}
+            </p>
+          </div>
+        </div>
+
+        {/* ── Related products ── */}
+        <div className="pp-related">
+          <h2 className="pp-related-title">También te puede interesar</h2>
+          <div className="pp-related-grid">
             {otherProducts.map((op) => (
               <Link
                 key={op.id}
                 to={`/producto/${op.id}`}
-                className="pp-other-card"
+                className="pp-related-card"
                 style={{ "--pp-accent": DETAIL[op.id]?.accentColor } as React.CSSProperties}
               >
                 <img
                   src={DETAIL[op.id]?.image}
                   alt={op.name}
-                  className="pp-other-img"
+                  className="pp-related-img"
                   loading="lazy"
                 />
-                <div className="pp-other-body">
-                  <span className="pp-other-name">{op.name}</span>
-                  <span className="pp-other-price">${op.priceUsd.toFixed(2)} USD</span>
+                <div className="pp-related-body">
+                  <span className="pp-related-name">{op.name}</span>
+                  <span className="pp-related-price">${op.priceUsd.toFixed(2)} USD</span>
                 </div>
-                <div className="pp-other-accent-line" />
+                <div className="pp-related-bar" />
               </Link>
             ))}
           </div>
