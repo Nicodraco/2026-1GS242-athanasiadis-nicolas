@@ -2651,3 +2651,297 @@ body::after {
   .pp-testimonial { padding: var(--s4); }
   .pp-hero { gap: var(--s5); margin-bottom: var(--s6); }
 }
+
+/* ================================================================
+   CHECKOUT SUCCESS PAGE
+   ================================================================ */
+.cs-page {
+  min-height: 100dvh;
+  background: var(--forest);
+  display: grid;
+  place-items: center;
+  padding: var(--s8) var(--s4);
+}
+
+.cs-card {
+  position: relative;
+  background: white;
+  border: 3px solid var(--forest);
+  border-radius: var(--r-2xl);
+  padding: var(--s8) var(--s8);
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 10px 10px 0 #39ff14;
+}
+
+/* Confetti container */
+.cs-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Hero circle */
+.cs-hero {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--s4);
+}
+.cs-circle {
+  width: 96px;
+  height: 96px;
+  background: var(--mint);
+  border: 3px solid var(--forest);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+}
+.cs-check-icon { color: var(--fern); }
+
+/* Text */
+.cs-title {
+  font-family: var(--ff-disp);
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 900;
+  color: var(--forest);
+  letter-spacing: -0.04em;
+  margin: 0 0 var(--s2);
+}
+.cs-sub {
+  font-size: var(--t-base);
+  color: var(--ash);
+  line-height: 1.65;
+  margin: 0 0 var(--s5);
+}
+
+/* Steps */
+.cs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  text-align: left;
+  background: var(--cream);
+  border: 2px solid var(--stone);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: var(--s4);
+}
+.cs-step {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s2) var(--s4);
+  border-bottom: 1px solid var(--stone);
+}
+.cs-step:last-child { border-bottom: none; }
+
+.cs-step-dot {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--stone);
+  border: 2px solid var(--stone);
+  display: grid;
+  place-items: center;
+  color: var(--ash);
+}
+.cs-step-dot--done {
+  background: var(--fern);
+  border-color: var(--fern);
+  color: white;
+}
+.cs-step-dot--active {
+  background: var(--mint);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+
+.cs-step-body { display: flex; flex-direction: column; gap: 1px; }
+.cs-step-label {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  color: var(--forest);
+}
+.cs-step-desc {
+  font-size: var(--t-xs);
+  color: var(--ash);
+}
+
+/* Email hint */
+.cs-email-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: var(--t-xs);
+  color: var(--ash);
+  background: var(--dew);
+  border: 1.5px solid var(--mint);
+  border-radius: var(--r-lg);
+  padding: 0.6rem var(--s3);
+  margin-bottom: var(--s3);
+}
+.cs-email-hint svg { color: var(--fern); flex-shrink: 0; }
+
+/* Session ID */
+.cs-session {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s2);
+  font-size: var(--t-xs);
+  color: var(--ash);
+  margin-bottom: var(--s4);
+  flex-wrap: wrap;
+}
+.cs-session-label { font-weight: 600; }
+.cs-session-id {
+  font-family: monospace;
+  font-size: 0.7rem;
+  background: var(--cream);
+  border: 1px solid var(--stone);
+  border-radius: var(--r-sm);
+  padding: 0.15rem 0.5rem;
+  color: var(--char);
+  letter-spacing: 0.03em;
+}
+
+/* Actions */
+.cs-actions {
+  display: flex;
+  gap: var(--s3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.cs-btn-primary {
+  gap: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ================================================================
+   CHECKOUT CANCELLED PAGE
+   ================================================================ */
+.cc-page {
+  min-height: 100dvh;
+  background: var(--cream);
+  display: grid;
+  place-items: center;
+  padding: var(--s8) var(--s4);
+}
+
+.cc-card {
+  background: white;
+  border: 3px solid var(--forest);
+  border-radius: var(--r-2xl);
+  padding: var(--s8);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 6px 6px 0 var(--stone);
+}
+
+.cc-hero {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--s4);
+}
+.cc-circle {
+  width: 88px;
+  height: 88px;
+  background: #fff1f1;
+  border: 3px solid #e05050;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.cc-icon { color: #e05050; }
+
+.cc-title {
+  font-family: var(--ff-disp);
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+  font-weight: 900;
+  color: var(--forest);
+  letter-spacing: -0.04em;
+  margin: 0 0 var(--s2);
+}
+.cc-sub {
+  font-size: var(--t-base);
+  color: var(--ash);
+  line-height: 1.65;
+  margin: 0 0 var(--s5);
+}
+
+.cc-reasons-wrap {
+  background: var(--cream);
+  border: 2px solid var(--stone);
+  border-radius: var(--r-xl);
+  padding: var(--s3) var(--s4);
+  text-align: left;
+  margin-bottom: var(--s5);
+}
+.cc-reasons-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--t-xs);
+  font-weight: 700;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--s2);
+}
+.cc-reasons-heading svg { color: var(--stone); }
+.cc-reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.cc-reasons li {
+  font-size: var(--t-sm);
+  color: var(--char);
+  padding-left: 1rem;
+  position: relative;
+}
+.cc-reasons li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  color: var(--stone);
+}
+
+.cc-actions {
+  display: flex;
+  gap: var(--s3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--s4);
+}
+.cc-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cc-help {
+  font-size: var(--t-xs);
+  color: var(--ash);
+  margin: 0;
+}
+.cc-help a {
+  color: var(--fern);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .cs-card, .cc-card { padding: var(--s5) var(--s4); }
+  .cs-actions, .cc-actions { flex-direction: column; align-items: stretch; }
+}

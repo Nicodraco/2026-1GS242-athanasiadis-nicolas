@@ -23,6 +23,8 @@ import { StatsSection } from "@/components/stats";
 import { CustomCursor } from "@/components/cursor";
 import { CartDrawer, CartTrigger } from "@/components/cart-drawer";
 import { ProductPage } from "@/components/product-page";
+import { CheckoutSuccessPage } from "@/components/checkout-success";
+import { CheckoutCancelledPage } from "@/components/checkout-cancelled";
 import { CartProvider } from "@/lib/cart";
 import { useLenis } from "@/lib/useLenis";
 import gsap from "gsap";
@@ -363,6 +365,8 @@ function AppWithClerk() {
         />
         <Route path="/admin"       element={<AdminBridgePage />} />
         <Route path="/producto/:id" element={<ProductPage />} />
+        <Route path="/checkout/success"   element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/cancelled" element={<CheckoutCancelledPage />} />
         <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
         <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
         <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
@@ -455,6 +459,8 @@ function AppWithoutClerk() {
           }
         />
         <Route path="/producto/:id" element={<ProductPage />} />
+        <Route path="/checkout/success"   element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/cancelled" element={<CheckoutCancelledPage />} />
         <Route path="/terminos"    element={<LegalPage slug="terminos" />} />
         <Route path="/privacidad"  element={<LegalPage slug="privacidad" />} />
         <Route path="/devoluciones" element={<LegalPage slug="devoluciones" />} />
