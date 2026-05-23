@@ -1,0 +1,17 @@
+{
+  "name": "pokemon-battle-rooms",
+  "private": true,
+  "packageManager": "bun@1.3.11",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "bun run --filter web dev",
+    "dev:api": "bun run --filter api dev",
+    "dev": "bun run dev:api & bun run dev:web",
+    "dev:docker": "docker compose up --build",
+    "build": "bun run --filter api build && bun run --filter web build",
+    "test": "bun run --filter web test"
+  }
+}
+

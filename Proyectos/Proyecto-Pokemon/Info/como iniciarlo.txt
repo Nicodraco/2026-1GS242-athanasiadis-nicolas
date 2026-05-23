@@ -1,0 +1,69 @@
+como es que puedo probarlo?
+
+● Hazlo así, en orden:
+
+   1. Abre terminal en C:\Users\Usuario\Desktop\pelea-PokemonDesIX.
+   2. Crea .env:
+
+   Copy-Item .env.example .env
+
+   1. Instala dependencias:
+
+   bun install
+
+   1. Levanta MongoDB (elige una opción):
+    - Con Docker Desktop:
+   
+    docker compose up --build
+   
+   
+    - Sin Docker: levanta Mongo local en mongodb://localhost:27017.
+   2. Si usas Docker para todo, ya queda web+api arriba.
+  Si NO, abre 2 terminales:
+
+   bun run dev:api
+   bun run dev:web
+
+   1. Importa catálogo (en otra terminal):
+
+   bun run --filter api import:pokeapi --limit 300
+
+   1. Abre http://localhost:3000 en dos navegadores/sesiones.
+   2. Flujo de prueba:
+    - Jugador A: crear sala.
+    - Jugador B: unirse con código.
+    - Ambos: marcar ready.
+    - Seleccionar equipos.
+    - Iniciar batalla y jugar turnos.
+
+  Chequeos rápidos:
+
+   - API health: http://localhost:3001/health
+   - Estado sala: GET /rooms/:code
+   - Estado batalla: GET /battles/:roomCode/state
+
+
+
+
+
+ cuando coloco bun run dev me sale: C:\Users\Usuario\Desktop\pelea-PokemonDesIX>bun run dev 
+  $ bun run dev:api & bun run dev:web                                                        
+  error: Failed to run script dev due to error Background commands "&" are not supported yet.
+
+● Ese error es normal: en Windows, Bun todavía no soporta & dentro de scripts.
+
+  La forma rápida es correrlos en dos terminales:
+
+   # Terminal 1
+   cd C:\Users\Usuario\Desktop\pelea-PokemonDesIX
+   bun run dev:api
+
+   # Terminal 2
+   cd C:\Users\Usuario\Desktop\pelea-PokemonDesIX
+   bun run dev:web
+
+  Con eso ya abre en http://localhost:3000.
+
+  Si quieres dejar bun run dev funcionando en un solo comando, cambia el script dev para usar concurrently en lugar de
+  &.
+

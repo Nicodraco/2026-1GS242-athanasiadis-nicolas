@@ -1,0 +1,51 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: pbr-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    image: oven/bun:1.2
+    container_name: pbr-api
+    working_dir: /workspace/apps/api
+    command: sh -c "cd /workspace && bun install && cd apps/api && bun run dev"
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: development
+      API_PORT: 3001
+      MONGODB_URI: mongodb://mongo:27017/pokemon_battle_rooms
+      MONGODB_DB_NAME: pokemon_battle_rooms
+      API_PUBLIC_URL: http://localhost:3001
+      WEB_PUBLIC_URL: http://localhost:3000
+    depends_on:
+      - mongo
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./:/workspace
+
+  web:
+    image: oven/bun:1.2
+    container_name: pbr-web
+    working_dir: /workspace/apps/web
+    command: sh -c "cd /workspace && bun install && cd apps/web && bun run dev --host 0.0.0.0 --port 3000"
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: development
+      VITE_API_BASE_URL: http://localhost:3001
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/workspace
+
+volumes:
+  mongo_data:
+

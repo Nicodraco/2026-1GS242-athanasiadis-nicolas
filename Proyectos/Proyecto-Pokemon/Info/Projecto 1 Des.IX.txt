@@ -1,0 +1,32 @@
+Proyecto individual Desarrollo 9#
+Juego en linea
+Pelea
+pokemon showdown
+
+poke api
+
+react
+
+ganas cuando matas los 6 pokemones
+cada pokemon tiene 4 habilidades
+para jugar de 2 tiene que ser desde otra computadora 
+y al inicio de la partida se hace un coin flip para decidir quien empieza
+animaciones de los pokemones
+los sprites del mismo tipo
+atacar o cambiar no ítems ni run
+un solo turno paralos efectos, cuando los retiras de batalla pierde el efecto
+
+no contar con la velocidad ósea apenas el coin flip decide quien empieza ya solo va por turnos
+
+inicia en una sala como la pokedesx para elejir los pokemones y tienen un tiempo limite
+
+funcionalidad extra: que tenga ban para baniar algunos pokemones como ranked 
+
+
+tanstack start
+hono sobre bun
+PokeApi
+
+
+tengo que incluir cuenta con Clerk y pagos con stripe un ejemplo seria si quieres usar shinies pagas con stripe
+
