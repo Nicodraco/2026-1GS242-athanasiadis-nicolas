@@ -19,18 +19,29 @@ async function registerWithUI(page, { name, email, role }) {
   await page.getByTestId("auth-submit-button").click();
 }
 
+async function loginViaUI(page, { email }) {
+  await page.goto("/auth");
+  await page.getByTestId("auth-mode-login").click();
+  await page.getByTestId("auth-email-input").fill(email);
+  await page.getByTestId("auth-password-input").fill(PASSWORD);
+  await page.getByTestId("auth-submit-button").click();
+}
+
+async function createUserSeed(request, { name, email, role }) {
+  const response = await request.post(`${API_BASE_URL}/auth/register`, {
+    data: { name, email, password: PASSWORD, role },
+  });
+  expect(response.ok()).toBeTruthy();
+  return response.json();
+}
+
 async function createPollSeed(request) {
   const teacherEmail = uniqueEmail("e2e.teacher.seed");
-  const teacherRegister = await request.post(`${API_BASE_URL}/auth/register`, {
-    data: {
-      name: "Teacher Seed",
-      email: teacherEmail,
-      password: PASSWORD,
-      role: "teacher",
-    },
+  const teacherAuth = await createUserSeed(request, {
+    name: "Teacher Seed",
+    email: teacherEmail,
+    role: "teacher",
   });
-  expect(teacherRegister.ok()).toBeTruthy();
-  const teacherAuth = await teacherRegister.json();
 
   const createPoll = await request.post(`${API_BASE_URL}/polls`, {
     headers: {
@@ -42,7 +53,7 @@ async function createPollSeed(request) {
     },
   });
   expect(createPoll.ok()).toBeTruthy();
-  return createPoll.json();
+  return { poll: await createPoll.json(), teacherAuth, teacherEmail };
 }
 
 test("flujo profesor: registro y creacion de encuesta", async ({ page }) => {
@@ -69,7 +80,7 @@ test("flujo estudiante: entrar por codigo y votar una sola vez", async ({
   page,
   request,
 }) => {
-  const poll = await createPollSeed(request);
+  const { poll } = await createPollSeed(request);
   const studentEmail = uniqueEmail("e2e.student.ui");
   await registerWithUI(page, {
     name: "Estudiante E2E",
@@ -108,4 +119,90 @@ test("caso negativo: estudiante no puede entrar a vista de profesor", async ({
       name: "PollClass Login",
     })
   ).toBeVisible();
+});
+
+test("flujo login profesor: inicio de sesion con credenciales existentes", async ({
+  page,
+  request,
+}) => {
+  const email = uniqueEmail("e2e.teacher.login");
+  await createUserSeed(request, {
+    name: "Profesor Login",
+    email,
+    role: "teacher",
+  });
+
+  await loginViaUI(page, { email });
+
+  await expect(page).toHaveURL(/\/teacher$/);
+  await page.getByTestId("teacher-question-input").fill("Pregunta login E2E");
+  await page.getByTestId("teacher-option-input-0").fill("Opcion 1");
+  await page.getByTestId("teacher-option-input-1").fill("Opcion 2");
+  await page.getByTestId("teacher-create-poll-button").click();
+
+  await expect(page.getByTestId("teacher-results-section")).toBeVisible();
+  const pollCode = await page.getByTestId("teacher-results-code").innerText();
+  expect(pollCode).toMatch(/^[A-Z0-9]{6}$/);
+  await expect(page.getByTestId(`teacher-poll-card-${pollCode}`)).toBeVisible();
+});
+
+test("flujo login estudiante: inicio de sesion y voto", async ({
+  page,
+  request,
+}) => {
+  const { poll } = await createPollSeed(request);
+  const studentEmail = uniqueEmail("e2e.student.login");
+  await createUserSeed(request, {
+    name: "Estudiante Login",
+    email: studentEmail,
+    role: "student",
+  });
+
+  await loginViaUI(page, { email: studentEmail });
+
+  await expect(page).toHaveURL(/\/$/);
+  await page.getByTestId("landing-code-input").fill(poll.code);
+  await page.getByTestId("landing-join-button").click();
+
+  await expect(page).toHaveURL(new RegExp(`/poll/${poll.code}$`));
+  await page.getByRole("radio").first().check();
+  await page.getByTestId("student-submit-vote-button").click();
+
+  await expect(page.getByTestId("student-submit-vote-button")).toHaveText("Ya votaste");
+  await expect(
+    page.getByRole("heading", { name: /Resultados en vivo \(1 votos\)/ })
+  ).toBeVisible();
+});
+
+test("resultados en vivo: profesor visualiza resultados de su encuesta", async ({
+  page,
+  request,
+}) => {
+  const { poll, teacherEmail } = await createPollSeed(request);
+
+  await loginViaUI(page, { email: teacherEmail });
+
+  await expect(page).toHaveURL(/\/teacher$/);
+  await expect(page.getByTestId(`teacher-poll-card-${poll.code}`)).toBeVisible();
+
+  await page.getByTestId(`teacher-view-results-${poll.code}`).click();
+  await expect(page.getByTestId("teacher-results-section")).toBeVisible();
+  await expect(page.getByTestId("teacher-results-code")).toHaveText(poll.code);
+  await expect(page.getByTestId("teacher-results-section")).toContainText("Total votos: 0");
+});
+
+test("cierre de encuesta: profesor cierra y se refleja el estado", async ({
+  page,
+  request,
+}) => {
+  const { poll, teacherEmail } = await createPollSeed(request);
+
+  await loginViaUI(page, { email: teacherEmail });
+
+  await expect(page).toHaveURL(/\/teacher$/);
+  await expect(page.getByTestId(`teacher-poll-card-${poll.code}`)).toBeVisible();
+
+  await page.getByTestId(`teacher-close-poll-${poll.code}`).click();
+  await expect(page.getByTestId(`teacher-close-poll-${poll.code}`)).toBeDisabled();
+  await expect(page.getByTestId(`teacher-poll-card-${poll.code}`)).toContainText("Cerrada");
 });

@@ -135,7 +135,7 @@ El script valida:
 
 ## 8. Validación E2E con Playwright (base lab 5)
 
-Se agregó una suite inicial E2E con Playwright para validar flujos críticos de punta a punta sobre la aplicación de encuestas.
+Se agregó una suite E2E con Playwright (7 tests, 28+ assertions) para validar flujos críticos de punta a punta sobre la aplicación de encuestas.
 
 ### 8.1 Instalación
 
@@ -168,6 +168,10 @@ Archivo: `frontend/e2e/pollclass.e2e.spec.js`
 1. **Flujo profesor (E2E):** registro como profesor y creación de encuesta.
 2. **Flujo estudiante (E2E):** entrar por código, votar y validar estado final de “Ya votaste”.
 3. **Caso negativo (E2E):** estudiante intentando acceder a `/teacher` y redirección obligatoria a `/auth`.
+4. **Login profesor (E2E):** inicio de sesión con credenciales existentes vía API seed + UI.
+5. **Login estudiante (E2E):** inicio de sesión y voto completo con credenciales existentes.
+6. **Resultados en vivo (E2E):** profesor visualiza resultados de su encuesta.
+7. **Cierre de encuesta (E2E):** profesor cierra encuesta y se refleja estado "Cerrada".
 
 ### 8.4 Estructura de pruebas y locators estables
 
@@ -181,10 +185,33 @@ Archivo: `frontend/e2e/pollclass.e2e.spec.js`
   - creación de encuesta reflejada en panel de resultados y código válido.
   - voto de estudiante reflejado en estado “Ya votaste” y conteo de resultados.
   - control de acceso por rol en ruta protegida.
+  - login con credenciales existentes redirige correctamente según rol.
+  - resultados en vivo muestran código de encuesta y total de votos.
+  - cierre de encuesta deshabilita botón y muestra estado "Cerrada".
 
-## 9. Bitácora agéntica (corta)
+## 9. Bitácora agéntica
 
-- **Qué pedí al agente:** integrar Playwright al proyecto y crear pruebas E2E de flujos críticos con un caso negativo.
-- **Qué acepté del agente:** configuración Playwright, scripts npm E2E, tests para profesor/estudiante/acceso prohibido y documentación de ejecución.
-- **Qué corregí yo:** revisión de criterios de la asignación y verificación de que los flujos correspondan al laboratorio.
-- **Cómo validé:** ejecución de comandos de build y de suite E2E, revisando que las assertions representen comportamiento funcional real.
+### 9.1 Uso de Claude Code (agente principal)
+
+Usé **Claude Code** como agente principal para la creación de la suite E2E. Le pedí:
+- Integrar Playwright en el proyecto frontend con configuración de servidor dual (backend + frontend preview).
+- Escribir la primera batería de tests cubriendo: flujo profesor (registro + creación de encuesta), flujo estudiante (registro + voto) y caso negativo de acceso.
+- Agregar `data-testid` en los componentes clave del frontend para evitar fragilidad en los selectores.
+
+Claude Code generó la configuración de Playwright (`playwright.config.js`), los scripts npm (`test:e2e`, `test:e2e:headed`, `test:e2e:ui`) y los 3 tests iniciales. También documentó la ejecución y los flujos validados en este README. El agente propuso usar emails dinámicos vía `uniqueEmail()` para evitar colisiones entre ejecuciones, lo cual acepté sin cambios.
+
+### 9.2 Expansión con Claude Code (ampliación de cobertura)
+
+En una segunda iteración, Claude Code agregó 4 tests más para cubrir los flujos que la rúbrica pedía pero la suite inicial no alcanzaba:
+- Login profesor con credenciales existentes (vía API seed + UI login)
+- Login estudiante con credenciales existentes
+- Visualización de resultados en vivo por parte del profesor
+- Cierre de encuesta y verificación de estado "Cerrada"
+
+### 9.3 Lo que corregí / validé manualmente
+
+Revisé que las aserciones representen comportamiento real de negocio y no solo navegación. También validé que los nuevos tests no duplicaran setup innecesariamente y que los locators apuntaran a `data-testid` existentes. Ejecuté la suite completa en modo headless y headed para confirmar que pasa.
+
+### 9.4 Resultado final
+
+La suite pasó de 3 tests (12 expects) a 7 tests (28+ expects), cubriendo login, registro, voto, resultados en vivo y control de acceso por rol.
