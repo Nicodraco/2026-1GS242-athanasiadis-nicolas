@@ -1,9 +1,9 @@
 import { SignIn, SignInButton, SignUp, UserButton, useUser } from "@clerk/clerk-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { CheckoutButton } from "@/components/checkout-button";
-import { products } from "@/lib/catalog";
-import { getAdminAppUrl, isClerkConfigured } from "@/lib/env";
+import { products, type Product } from "@/lib/catalog";
+import { getAdminAppUrl, getApiUrl, isClerkConfigured } from "@/lib/env";
 import { getUserRole } from "@/lib/roles";
 
 function RootLayout({ children }: { children: React.ReactNode }) {
@@ -60,6 +60,47 @@ function RootLayout({ children }: { children: React.ReactNode }) {
 function HomePage() {
   const { user } = useUser();
   const clerkReady = isClerkConfigured();
+  const apiUrl = getApiUrl();
+  const [catalog, setCatalog] = useState<Product[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const controller = new AbortController();
+    const url = `${apiUrl}/products`;
+
+    async function loadCatalog() {
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) return;
+
+        const body = (await response.json()) as {
+          data: Array<Product & { isActive: boolean }>;
+        };
+        if (!alive) return;
+
+        setCatalog(
+          body.data.map((product) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            priceUsd: product.priceUsd,
+            tag: product.tag,
+          })),
+        );
+      } catch {
+        if (!alive) return;
+        setCatalog(null);
+      }
+    }
+
+    void loadCatalog();
+    return () => {
+      alive = false;
+      controller.abort();
+    };
+  }, [apiUrl]);
+
+  const productsToRender = catalog ?? products;
 
   return (
     <main>
@@ -109,7 +150,7 @@ function HomePage() {
         <div className="container">
           <h2 className="section-title">Kits para arrancar en una tarde</h2>
           <div className="grid">
-            {products.map((product) => (
+            {productsToRender.map((product) => (
               <article className="product" key={product.id}>
                 <span className="pill">{product.tag}</span>
                 <h3>{product.name}</h3>

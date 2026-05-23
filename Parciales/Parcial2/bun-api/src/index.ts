@@ -1,9 +1,17 @@
 import Stripe from "stripe";
 import {
+  closeCheckoutAttempt,
+  createCheckoutAttempt,
+  createProduct,
+  deleteProduct,
+  getProductById,
   listInventory,
   listOrders,
   listPendingOrders,
+  listProducts,
   OrderStatus,
+  productHasOrders,
+  updateProduct,
   updateInventory,
   updateOrderStatus,
   upsertOrderFromCheckout,
@@ -22,7 +30,7 @@ function getCorsHeaders(origin: string | null) {
   return {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": safeOrigin,
-    "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
+    "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type,Stripe-Signature",
   };
 }
@@ -40,26 +48,17 @@ const stripeClient = stripeSecretKey
   ? new Stripe(stripeSecretKey, { apiVersion: "2026-03-25.dahlia" })
   : null;
 
-const productsById = {
-  "kit-balcon-basico": {
-    id: "kit-balcon-basico",
-    name: "Kit Balcón Básico",
-    description: "Lechuga + cilantro + cebollín para espacios con 2-3 horas de luz.",
-    priceUsd: 24.9,
-  },
-  "kit-microverde-rapido": {
-    id: "kit-microverde-rapido",
-    name: "Kit Microverde Rápido",
-    description: "Microbrotes listos en 7-10 días, ideal para cocina en apartamentos.",
-    priceUsd: 29.9,
-  },
-  "kit-aromaticas-compacto": {
-    id: "kit-aromaticas-compacto",
-    name: "Kit Aromáticas Compacto",
-    description: "Albahaca + menta + perejil con guía de poda y riego urbano.",
-    priceUsd: 34.9,
-  },
-} as const;
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isValidPrice(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isValidStock(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
 
 async function refreshPendingOrdersWithStripe() {
   if (!stripeClient) return;
@@ -75,6 +74,8 @@ async function refreshPendingOrdersWithStripe() {
             ? "cancelled"
             : "pending";
 
+      if (syncedStatus === "pending") continue;
+
       upsertOrderFromCheckout({
         checkoutSessionId: session.id,
         productId: session.metadata?.productId ?? order.productId,
@@ -82,6 +83,7 @@ async function refreshPendingOrdersWithStripe() {
         status: syncedStatus,
         amountUsd: (session.amount_total ?? 0) / 100 || order.amountUsd,
       });
+      closeCheckoutAttempt(session.id);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown Stripe sync error";
       console.warn(`[orders-sync] checkout ${order.checkoutSessionId}: ${message}`);
@@ -127,12 +129,13 @@ Bun.serve({
         userEmail?: string | null;
       };
 
-      const selectedProduct =
-        body.productId && body.productId in productsById
-          ? productsById[body.productId as keyof typeof productsById]
-          : null;
-      if (!selectedProduct) {
+      if (!isNonEmptyString(body.productId)) {
         return jsonResponse({ error: "Producto no válido." }, { status: 400, origin });
+      }
+
+      const selectedProduct = getProductById(body.productId.trim());
+      if (!selectedProduct || !selectedProduct.isActive) {
+        return jsonResponse({ error: "Producto no disponible para compra." }, { status: 400, origin });
       }
 
       const storefrontUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
@@ -164,11 +167,10 @@ Bun.serve({
           ],
         });
 
-        upsertOrderFromCheckout({
+        createCheckoutAttempt({
           checkoutSessionId: session.id,
           productId: selectedProduct.id,
           buyerId,
-          status: "pending",
           amountUsd: selectedProduct.priceUsd,
         });
 
@@ -178,6 +180,141 @@ Bun.serve({
           error instanceof Error ? error.message : "Error al crear la sesión de Stripe.";
         return jsonResponse({ error: message }, { status: 500, origin });
       }
+    }
+
+    if (req.method === "GET" && url.pathname === "/products") {
+      const includeInactive = url.searchParams.get("includeInactive") === "1";
+      return jsonResponse({ data: listProducts({ includeInactive }) }, { origin });
+    }
+
+    if (req.method === "POST" && url.pathname === "/products") {
+      const body = (await req.json()) as {
+        id?: string;
+        name?: string;
+        description?: string;
+        priceUsd?: number;
+        tag?: string;
+        stock?: number;
+        minimumStock?: number;
+        isActive?: boolean;
+      };
+
+      if (!isNonEmptyString(body.id) || !/^[a-z0-9-]+$/.test(body.id.trim())) {
+        return jsonResponse(
+          { error: "ID inválido. Usa minúsculas, números y guiones." },
+          { status: 400, origin },
+        );
+      }
+
+      if (!isNonEmptyString(body.name) || !isNonEmptyString(body.description) || !isNonEmptyString(body.tag)) {
+        return jsonResponse({ error: "Nombre, descripción y tag son requeridos." }, { status: 400, origin });
+      }
+
+      if (!isValidPrice(body.priceUsd)) {
+        return jsonResponse({ error: "El precio debe ser un número mayor o igual a 0." }, { status: 400, origin });
+      }
+
+      if (!isValidStock(body.stock) || !isValidStock(body.minimumStock)) {
+        return jsonResponse({ error: "Stock y mínimo deben ser números >= 0." }, { status: 400, origin });
+      }
+
+      if (getProductById(body.id.trim())) {
+        return jsonResponse({ error: "Ya existe un producto con ese ID." }, { status: 409, origin });
+      }
+
+      try {
+        createProduct({
+          id: body.id.trim(),
+          name: body.name.trim(),
+          description: body.description.trim(),
+          priceUsd: body.priceUsd,
+          tag: body.tag.trim(),
+          stock: body.stock,
+          minimumStock: body.minimumStock,
+          isActive: body.isActive ?? true,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "No se pudo crear el producto.";
+        return jsonResponse({ error: message }, { status: 500, origin });
+      }
+
+      return jsonResponse({ ok: true }, { origin });
+    }
+
+    if (req.method === "PATCH" && url.pathname.startsWith("/products/")) {
+      const productId = decodeURIComponent(url.pathname.split("/").at(-1) || "");
+      if (!productId) {
+        return jsonResponse({ error: "ID de producto inválido." }, { status: 400, origin });
+      }
+
+      const body = (await req.json()) as {
+        name?: string;
+        description?: string;
+        priceUsd?: number;
+        tag?: string;
+        isActive?: boolean;
+        stock?: number;
+        minimumStock?: number;
+      };
+
+      if (body.name !== undefined && !isNonEmptyString(body.name)) {
+        return jsonResponse({ error: "El nombre no puede ser vacío." }, { status: 400, origin });
+      }
+      if (body.description !== undefined && !isNonEmptyString(body.description)) {
+        return jsonResponse({ error: "La descripción no puede ser vacía." }, { status: 400, origin });
+      }
+      if (body.tag !== undefined && !isNonEmptyString(body.tag)) {
+        return jsonResponse({ error: "El tag no puede ser vacío." }, { status: 400, origin });
+      }
+      if (body.priceUsd !== undefined && !isValidPrice(body.priceUsd)) {
+        return jsonResponse({ error: "El precio debe ser un número mayor o igual a 0." }, { status: 400, origin });
+      }
+      if (body.stock !== undefined && !isValidStock(body.stock)) {
+        return jsonResponse({ error: "Stock inválido." }, { status: 400, origin });
+      }
+      if (body.minimumStock !== undefined && !isValidStock(body.minimumStock)) {
+        return jsonResponse({ error: "Mínimo inválido." }, { status: 400, origin });
+      }
+      if (body.isActive !== undefined && typeof body.isActive !== "boolean") {
+        return jsonResponse({ error: "isActive debe ser booleano." }, { status: 400, origin });
+      }
+
+      const updated = updateProduct(productId, {
+        name: body.name?.trim(),
+        description: body.description?.trim(),
+        priceUsd: body.priceUsd,
+        tag: body.tag?.trim(),
+        isActive: body.isActive,
+        stock: body.stock,
+        minimumStock: body.minimumStock,
+      });
+
+      if (!updated) {
+        return jsonResponse({ error: "Producto no encontrado." }, { status: 404, origin });
+      }
+
+      return jsonResponse({ ok: true }, { origin });
+    }
+
+    if (req.method === "DELETE" && url.pathname.startsWith("/products/")) {
+      const productId = decodeURIComponent(url.pathname.split("/").at(-1) || "");
+      if (!productId) {
+        return jsonResponse({ error: "ID de producto inválido." }, { status: 400, origin });
+      }
+
+      if (productHasOrders(productId)) {
+        return jsonResponse(
+          { error: "No se puede eliminar un producto con órdenes históricas. Puedes desactivarlo." },
+          { status: 409, origin },
+        );
+      }
+
+      const deleted = deleteProduct(productId);
+      if (!deleted) {
+        return jsonResponse({ error: "Producto no encontrado." }, { status: 404, origin });
+      }
+
+      return jsonResponse({ ok: true }, { origin });
     }
 
     if (req.method === "GET" && url.pathname === "/orders") {
@@ -215,7 +352,11 @@ Bun.serve({
         return jsonResponse({ error: "Stock y mínimo son requeridos." }, { status: 400, origin });
       }
 
-      updateInventory({ sku, stock: body.stock, minimumStock: body.minimumStock });
+      const updated = updateInventory({ sku, stock: body.stock, minimumStock: body.minimumStock });
+      if (!updated) {
+        return jsonResponse({ error: "SKU no encontrado." }, { status: 404, origin });
+      }
+
       return jsonResponse({ ok: true }, { origin });
     }
 
@@ -256,6 +397,7 @@ Bun.serve({
           status: event.type === "checkout.session.completed" ? "paid" : "cancelled",
           amountUsd: (session.amount_total ?? 0) / 100,
         });
+        closeCheckoutAttempt(session.id);
       }
 
       return jsonResponse({ ok: true }, { origin });

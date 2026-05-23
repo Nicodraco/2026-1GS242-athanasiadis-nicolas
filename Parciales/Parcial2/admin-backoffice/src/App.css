@@ -1,5 +1,5 @@
 .shell {
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
 }
@@ -44,6 +44,17 @@
   margin-top: 0;
 }
 
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.section-head small {
+  color: #64748b;
+}
+
 .table {
   display: grid;
   gap: 0.5rem;
@@ -56,12 +67,23 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 0.8fr 1fr;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
+}
+
+.table-orders-row {
+  grid-template-columns: 2fr 1fr 1fr 0.8fr 1.2fr;
+}
+
+.table-inventory-row {
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+}
+
+.table-products-row {
+  grid-template-columns: 1.2fr 1.2fr 2fr 0.9fr 0.9fr 0.6fr 0.8fr 0.8fr 1.3fr;
 }
 
 .table-row input,
@@ -96,7 +118,14 @@
   color: #0f172a;
 }
 
-.inventory-actions {
+.button-danger {
+  background: #fff;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.inventory-actions,
+.product-actions {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -119,8 +148,34 @@
   color: #64748b;
 }
 
-@media (max-width: 960px) {
-  .table-row {
+.create-product {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 2fr 0.8fr 0.8fr 0.8fr 0.8fr auto auto;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.create-product input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .table-orders-row,
+  .table-inventory-row,
+  .table-products-row,
+  .create-product {
     grid-template-columns: 1fr;
   }
 

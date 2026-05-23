@@ -75,4 +75,8 @@ Rutas API Bun:
 - `PATCH /orders/:id`
 - `GET /inventory`
 - `PATCH /inventory/:sku`
+- `GET /products`
+- `POST /products`
+- `PATCH /products/:id`
+- `DELETE /products/:id`
 - `POST /webhooks/stripe`
