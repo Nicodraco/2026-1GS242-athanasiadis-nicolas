@@ -132,22 +132,25 @@ export type PendingOrder = {
   amountUsd: number;
 };
 
+const ORDER_FIELDS = `
+  id,
+  checkout_session_id AS checkoutSessionId,
+  product_id          AS productId,
+  buyer_id            AS buyerId,
+  status,
+  amount_usd          AS amountUsd,
+  created_at          AS createdAt,
+  updated_at          AS updatedAt
+`;
+
 export function listOrders() {
+  return db.query(`SELECT ${ORDER_FIELDS} FROM orders ORDER BY created_at DESC`).all();
+}
+
+export function listOrdersByBuyer(buyerId: string) {
   return db
-    .query(
-      `SELECT
-        id,
-        checkout_session_id AS checkoutSessionId,
-        product_id AS productId,
-        buyer_id AS buyerId,
-        status,
-        amount_usd AS amountUsd,
-        created_at AS createdAt,
-        updated_at AS updatedAt
-      FROM orders
-      ORDER BY created_at DESC`,
-    )
-    .all();
+    .query(`SELECT ${ORDER_FIELDS} FROM orders WHERE buyer_id = ? ORDER BY created_at DESC`)
+    .all(buyerId);
 }
 
 export function listPendingOrders(): PendingOrder[] {

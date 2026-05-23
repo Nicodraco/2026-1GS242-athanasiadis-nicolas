@@ -7,6 +7,7 @@ import {
   getProductById,
   listInventory,
   listOrders,
+  listOrdersByBuyer,
   listPendingOrders,
   listProducts,
   OrderStatus,
@@ -66,7 +67,11 @@ async function refreshPendingOrdersWithStripe() {
   const pendingOrders = listPendingOrders();
   for (const order of pendingOrders) {
     try {
-      const session = await stripeClient.checkout.sessions.retrieve(order.checkoutSessionId);
+      // Cart orders use `${stripeId}:${productId}` — strip suffix to get real session ID
+      const stripeSessionId = order.checkoutSessionId.includes(":")
+        ? order.checkoutSessionId.split(":")[0]
+        : order.checkoutSessionId;
+      const session = await stripeClient.checkout.sessions.retrieve(stripeSessionId);
       const syncedStatus: OrderStatus =
         session.payment_status === "paid" || session.status === "complete"
           ? "paid"
@@ -145,8 +150,8 @@ Bun.serve({
       try {
         const session = await stripeClient.checkout.sessions.create({
           mode: "payment",
-          success_url: `${storefrontUrl}/dashboard?payment=success`,
-          cancel_url: `${storefrontUrl}/dashboard?payment=cancelled`,
+          success_url: `${storefrontUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${storefrontUrl}/checkout/cancelled`,
           customer_email: normalizedEmail,
           metadata: {
             productId: selectedProduct.id,
@@ -182,6 +187,7 @@ Bun.serve({
       }
     }
 
+<<<<<<< HEAD
     if (req.method === "GET" && url.pathname === "/products") {
       const includeInactive = url.searchParams.get("includeInactive") === "1";
       return jsonResponse({ data: listProducts({ includeInactive }) }, { origin });
@@ -315,11 +321,91 @@ Bun.serve({
       }
 
       return jsonResponse({ ok: true }, { origin });
+=======
+    // ── Cart checkout (multi-item) ─────────────────────────────────
+    if (req.method === "POST" && url.pathname === "/api/cart-checkout") {
+      if (!stripeClient) {
+        return jsonResponse(
+          { error: "Configura STRIPE_SECRET_KEY para habilitar checkout." },
+          { status: 503, origin },
+        );
+      }
+
+      const body = (await req.json()) as {
+        items?: { productId: string; quantity: number }[];
+        userId?: string | null;
+        userEmail?: string | null;
+      };
+
+      if (!Array.isArray(body.items) || body.items.length === 0) {
+        return jsonResponse({ error: "El carrito está vacío." }, { status: 400, origin });
+      }
+
+      type CartLine = { product: (typeof productsById)[keyof typeof productsById]; quantity: number };
+      const cartLines: CartLine[] = [];
+      for (const item of body.items) {
+        if (!item.productId || !(item.productId in productsById)) {
+          return jsonResponse({ error: `Producto inválido: ${item.productId}` }, { status: 400, origin });
+        }
+        const qty = Math.max(1, Math.min(99, Number(item.quantity) || 1));
+        cartLines.push({ product: productsById[item.productId as keyof typeof productsById], quantity: qty });
+      }
+
+      const storefrontUrl = process.env.APP_URL?.trim() || "http://localhost:3000";
+      const normalizedEmail = body.userEmail?.trim().toLowerCase() || undefined;
+      const buyerId = body.userId?.trim() || `guest-${Date.now()}`;
+
+      const lineItems = cartLines.map(({ product, quantity }) => ({
+        quantity,
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(product.priceUsd * 100),
+          product_data: { name: product.name, description: product.description },
+        },
+      }));
+
+      const cartMeta = JSON.stringify(
+        cartLines.map(({ product, quantity }) => ({
+          productId: product.id,
+          quantity,
+          amountUsd: product.priceUsd,
+        })),
+      );
+
+      try {
+        const session = await stripeClient.checkout.sessions.create({
+          mode: "payment",
+          success_url: `${storefrontUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${storefrontUrl}/checkout/cancelled`,
+          customer_email: normalizedEmail,
+          metadata: { buyerId, cartItems: cartMeta },
+          line_items: lineItems,
+        });
+
+        // One order row per cart line: checkoutSessionId = `${session.id}:${productId}`
+        for (const { product, quantity } of cartLines) {
+          upsertOrderFromCheckout({
+            checkoutSessionId: `${session.id}:${product.id}`,
+            productId: product.id,
+            buyerId,
+            status: "pending",
+            amountUsd: product.priceUsd * quantity,
+          });
+        }
+
+        return jsonResponse({ checkoutUrl: session.url }, { origin });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al crear la sesión de Stripe.";
+        return jsonResponse({ error: message }, { status: 500, origin });
+      }
+>>>>>>> 175a8a7c530924d3bf5b2318019d3cdcddcfafdf
     }
 
     if (req.method === "GET" && url.pathname === "/orders") {
       await refreshPendingOrdersWithStripe();
-      return jsonResponse({ data: listOrders() }, { origin });
+      const buyerId = url.searchParams.get("buyerId")?.trim();
+      const data = buyerId ? listOrdersByBuyer(buyerId) : listOrders();
+      return jsonResponse({ data }, { origin });
     }
 
     if (req.method === "PATCH" && url.pathname.startsWith("/orders/")) {
@@ -390,6 +476,7 @@ Bun.serve({
 
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.expired") {
         const session = event.data.object as Stripe.Checkout.Session;
+<<<<<<< HEAD
         upsertOrderFromCheckout({
           checkoutSessionId: session.id,
           productId: session.metadata?.productId ?? "unknown-product",
@@ -398,6 +485,39 @@ Bun.serve({
           amountUsd: (session.amount_total ?? 0) / 100,
         });
         closeCheckoutAttempt(session.id);
+=======
+        const newStatus = event.type === "checkout.session.completed" ? "paid" : "cancelled";
+        const buyerId = session.metadata?.buyerId ?? "unknown-buyer";
+
+        if (session.metadata?.cartItems) {
+          // Multi-item cart checkout — update each per-item order row
+          try {
+            const cartItems = JSON.parse(session.metadata.cartItems) as {
+              productId: string; quantity: number; amountUsd: number;
+            }[];
+            for (const item of cartItems) {
+              upsertOrderFromCheckout({
+                checkoutSessionId: `${session.id}:${item.productId}`,
+                productId: item.productId,
+                buyerId,
+                status: newStatus,
+                amountUsd: item.amountUsd * item.quantity,
+              });
+            }
+          } catch {
+            console.warn(`[webhook] Could not parse cartItems for session ${session.id}`);
+          }
+        } else {
+          // Single-product checkout (legacy)
+          upsertOrderFromCheckout({
+            checkoutSessionId: session.id,
+            productId: session.metadata?.productId ?? "unknown-product",
+            buyerId,
+            status: newStatus,
+            amountUsd: (session.amount_total ?? 0) / 100,
+          });
+        }
+>>>>>>> 175a8a7c530924d3bf5b2318019d3cdcddcfafdf
       }
 
       return jsonResponse({ ok: true }, { origin });
