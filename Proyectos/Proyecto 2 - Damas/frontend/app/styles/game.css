@@ -1,0 +1,16 @@
+.game-layout { display: flex; gap: 28px; flex-wrap: wrap; }
+.game-sidebar { width: 260px; display: flex; flex-direction: column; gap: 18px; flex-shrink: 0; }
+.game-board-col { flex: 1; min-width: 300px; display: flex; justify-content: center; }
+.game-player {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border-radius: 12px; border: 1px solid transparent; transition: background 150ms, border-color 150ms;
+}
+.game-player-active { background: rgba(200, 168, 102, 0.12); border-color: rgba(200, 168, 102, 0.4); }
+.game-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.game-player-label { font-weight: 700; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.game-player-name { font-size: 14px; color: var(--muted); font-family: var(--font-mono); }
+.game-player-moves { font-size: 22px; font-weight: 700; font-family: var(--font-display); color: var(--gold); }
+.game-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center; z-index: 200;
+}

@@ -1,0 +1,14 @@
+.ranking-list { list-style: none; padding: 0; margin-top: 24px; }
+.ranking-row {
+  display: flex; align-items: center; gap: 18px;
+  padding: 16px 18px; margin-bottom: 10px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; transition: background 120ms;
+}
+.ranking-top3 { background: var(--surface-2); border-width: 2px; }
+.ranking-pos { font-size: 24px; width: 40px; text-align: center; font-weight: 700; font-family: var(--font-display); }
+.ranking-who { flex: 1; }
+.ranking-username { font-weight: 600; font-size: 16px; display: flex; align-items: center; }
+.ranking-moves { text-align: right; }
+.ranking-moves-num { font-size: 28px; font-weight: 700; font-family: var(--font-display); color: var(--gold); }
+.ranking-moves-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--muted); }

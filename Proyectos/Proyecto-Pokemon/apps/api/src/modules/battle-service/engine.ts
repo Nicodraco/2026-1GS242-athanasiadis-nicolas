@@ -328,12 +328,21 @@ const executeSwitchAction = (
   );
 };
 
+const moveCache = new Map<string, MoveCatalogDocument>();
+const typeCache = new Map<string, TypeCatalogDocument>();
+
 const fetchMoveByName = async (db: Db, moveName: string): Promise<MoveCatalogDocument> => {
+  const cached = moveCache.get(moveName);
+  if (cached) {
+    return cached;
+  }
+
   const move = await db.collection<MoveCatalogDocument>("moves").findOne({ name: moveName });
   if (!move) {
     throw new BattleServiceError("INVALID_ACTION", `Move ${moveName} was not found.`);
   }
 
+  moveCache.set(moveName, move);
   return move;
 };
 
@@ -341,12 +350,31 @@ const fetchTypeRelations = async (
   db: Db,
   defendingTypes: string[],
 ): Promise<Record<string, TypeCatalogDocument>> => {
-  const typeDocs = await db
-    .collection<TypeCatalogDocument>("types")
-    .find({ name: { $in: defendingTypes } })
-    .toArray();
+  const result: Record<string, TypeCatalogDocument> = {};
+  const missingTypes: string[] = [];
 
-  return Object.fromEntries(typeDocs.map((doc) => [doc.name, doc]));
+  for (const typeName of defendingTypes) {
+    const cached = typeCache.get(typeName);
+    if (cached) {
+      result[typeName] = cached;
+    } else {
+      missingTypes.push(typeName);
+    }
+  }
+
+  if (missingTypes.length > 0) {
+    const typeDocs = await db
+      .collection<TypeCatalogDocument>("types")
+      .find({ name: { $in: missingTypes } })
+      .toArray();
+
+    for (const doc of typeDocs) {
+      typeCache.set(doc.name, doc);
+      result[doc.name] = doc;
+    }
+  }
+
+  return result;
 };
 
 const maybeApplyMoveStatus = (

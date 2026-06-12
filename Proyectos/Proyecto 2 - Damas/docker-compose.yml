@@ -1,0 +1,107 @@
+name: damas
+
+services:
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_AUTH_URL: http://localhost:4001
+        VITE_GAME_URL: http://localhost:4002
+        VITE_AI_URL: http://localhost:4003
+        VITE_MARKETPLACE_URL: http://localhost:4004
+        VITE_RANKING_URL: http://localhost:4005
+    environment:
+      VITE_AUTH_URL: http://localhost:4001
+      VITE_GAME_URL: http://localhost:4002
+      VITE_AI_URL: http://localhost:4003
+      VITE_MARKETPLACE_URL: http://localhost:4004
+      VITE_RANKING_URL: http://localhost:4005
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - game-service
+      - ai-service
+      - ranking-service
+      - marketplace-service
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      MONGODB_URL: mongodb://mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  game-service:
+    build: ./game-service
+    ports:
+      - "4002:4002"
+    environment:
+      PORT: 4002
+      MONGODB_URL: mongodb://mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+      AI_SERVICE_URL: http://ai-service:4003
+      RANKING_SERVICE_URL: http://ranking-service:4005
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "4003:4003"
+    environment:
+      PORT: 4003
+    restart: unless-stopped
+
+  ranking-service:
+    build: ./ranking-service
+    ports:
+      - "4005:4005"
+    environment:
+      PORT: 4005
+      MONGODB_URL: mongodb://mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  marketplace-service:
+    build: ./marketplace-service
+    ports:
+      - "4004:4004"
+    environment:
+      PORT: 4004
+      MONGODB_URL: mongodb://mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mongodb-data:
