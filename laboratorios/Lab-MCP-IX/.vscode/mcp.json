@@ -1,0 +1,9 @@
+{
+    "servers": {
+        "qaLabMcp": {
+            "type": "stdio",
+            "command": "python",
+            "args": ["server.py"]
+        }
+    }
+}

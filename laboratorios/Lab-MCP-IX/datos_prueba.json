@@ -1,0 +1,20 @@
+[
+    {
+        "cip": "CIP001",
+        "nombre": "Juan Perez",
+        "telefono": "1234-5678",
+        "email": "juan@demo.com"
+    },
+    {
+        "cip": "CIP002",
+        "nombre": "Maria Lopez",
+        "telefono": "8765-4321",
+        "email": "maria@demo.com"
+    },
+    {
+        "cip": "CIP12345",
+        "nombre": "Cliente Test",
+        "telefono": "6677-8899",
+        "email": "prueba@demo.com"
+    }
+]
